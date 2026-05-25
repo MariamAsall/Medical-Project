@@ -52,12 +52,12 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist', 
     'accounts',
-    'patients',
-    'doctors',
-    'appointments',
-    'availability',
-    'notifications',
-    'admin_panel',
+    #'patients',
+    #'doctors',
+    #'appointments',
+    #'availability',
+    #'notifications',
+    #'admin_panel',
 ]
 
 MIDDLEWARE = [
