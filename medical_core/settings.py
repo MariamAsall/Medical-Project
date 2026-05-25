@@ -52,7 +52,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist', 
     'accounts',
-    #'patients',
+    'patients',
     #'doctors',
     #'appointments',
     #'availability',
@@ -104,6 +104,7 @@ DATABASES = {
         'PORT': os.environ.get('DB_PORT', '5432'),
     }
 }
+
 
 
 # Password validation
