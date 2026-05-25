@@ -22,7 +22,7 @@ User = get_user_model()
 # ------------------------------------------------------------------ #
 #  Helper: build token payload
 # ------------------------------------------------------------------ #
-def _get_tokens_for_user(user: User) -> dict:
+def _get_tokens_for_user(user: user) -> dict:
     """
     Returns a dict with access + refresh tokens
     and embeds role/id claims for frontend use.
