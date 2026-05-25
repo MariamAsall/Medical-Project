@@ -118,7 +118,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     # ------------------------------------------------------------------ #
     # Create user
     # ------------------------------------------------------------------ #
-    def create(self, validated_data: dict) -> User:
+    def create(self, validated_data: dict) -> user:
         validated_data.pop("password_confirm")
         password = validated_data.pop("password")
 
