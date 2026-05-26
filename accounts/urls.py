@@ -42,4 +42,3 @@ urlpatterns = [
     path("admin/users/<int:user_id>/block/", BlockUserView.as_view()),
 
 ]
-]

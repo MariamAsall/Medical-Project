@@ -8,7 +8,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 from .models import User
-from .utils import send_notification_email
+from notifications.utils import send_notification_email
 
 from .serializers import (
     RegisterSerializer,
