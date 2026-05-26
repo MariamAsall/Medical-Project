@@ -24,7 +24,7 @@ class SpecialtyViewSet(viewsets.ModelViewSet):
 
 class DoctorProfileViewSet(viewsets.ModelViewSet):
     serializer_class   = DoctorProfileSerializer
-    permission_classes = [IsApprovedDoctor]
+    #permission_classes = [IsApprovedDoctor]
 
     def get_queryset(self):
         return DoctorProfile.objects.filter(user=self.request.user)

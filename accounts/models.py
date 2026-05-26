@@ -3,13 +3,6 @@ from django.db import models
 
 
 class User(AbstractUser):
-    """
-    Custom User Model for the Medical Appointment System.
-    Extends AbstractUser to add role-based access control.
-
-    Owner : Mariam
-    App   : accounts/
-    """
 
     class Role(models.TextChoices):
         ADMIN   = "ADMIN",   "Admin"

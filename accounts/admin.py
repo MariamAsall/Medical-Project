@@ -6,11 +6,6 @@ from .models import User
 
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
-    """
-    Extended Admin panel view for the custom User model.
-
-    Owner : Mariam
-    """
 
     list_display  = (
         "email", "username", "get_full_name",
