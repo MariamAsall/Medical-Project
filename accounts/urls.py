@@ -1,3 +1,9 @@
+
+from django.contrib import admin
+from django.urls import path
+
+urlpatterns = [
+]
 from django.urls import path
 from .views import (
     RegisterView,
@@ -35,4 +41,5 @@ urlpatterns = [
     path("admin/users/<int:user_id>/approve/", ApproveUserView.as_view()),
     path("admin/users/<int:user_id>/block/", BlockUserView.as_view()),
 
+]
 ]

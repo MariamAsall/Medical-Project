@@ -14,6 +14,9 @@ from pathlib import Path
 import os
 from datetime import timedelta
 
+
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -52,7 +55,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist', 
     'accounts',
-    #'patients',
+    'patients',
     #'doctors',
     #'appointments',
     #'availability',
@@ -104,6 +107,7 @@ DATABASES = {
         'PORT': os.environ.get('DB_PORT', '5432'),
     }
 }
+
 
 
 # Password validation
