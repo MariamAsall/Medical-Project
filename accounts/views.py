@@ -8,6 +8,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 from .models import User
+from .utils import send_notification_email
 
 from .serializers import (
     RegisterSerializer,
@@ -262,6 +263,11 @@ class ApproveUserView(APIView):
             user = User.objects.get(id=user_id)
             user.is_approved = True
             user.save()
+            send_notification_email(
+                "Account Approved",
+                "Your acc has approved. Login now",
+                user.email
+            )
 
             return Response({"message": "User approved successfully"})
         except User.DoesNotExist:
@@ -280,6 +286,11 @@ class BlockUserView(APIView):
             user.is_active = False
             user.is_approved = False
             user.save()
+            send_notification_email(
+                "Account Blocked",
+                "Your account has been blocked!. Please contact Admin.",
+                user.email
+            )
 
             return Response({"message": "User blocked successfully"})
         except User.DoesNotExist:
