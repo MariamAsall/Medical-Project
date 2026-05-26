@@ -16,6 +16,10 @@ class UserAdmin(BaseUserAdmin):
         "email", "username", "get_full_name",
         "role", "is_approved", "is_active", "date_joined",
     )
+    readonly_fields= (
+        "date_joined",
+        "last_login",
+    )
     list_filter   = ("role", "is_approved", "is_active", "is_staff")
     search_fields = ("email", "username", "first_name", "last_name")
     ordering      = ("-date_joined",)
@@ -57,4 +61,4 @@ class UserAdmin(BaseUserAdmin):
 
     @admin.action(description="Block selected users")
     def block_users(self, request, queryset):
-        queryset.update(is_approved=False)
+        queryset.update(is_active=False,is_approved=False)
