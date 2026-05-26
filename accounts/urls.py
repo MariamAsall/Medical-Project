@@ -6,6 +6,9 @@ from .views import (
     CustomTokenRefreshView,
     MeView,
     ChangePasswordView,
+    AdminUserListView,
+    ApproveUserView,
+    BlockUserView,
 )
 
 app_name = "accounts"
@@ -24,4 +27,12 @@ urlpatterns = [
     # ------------------------------------------------------------------ #
     path("me/",               MeView.as_view(),                  name="me"),
     path("change-password/",  ChangePasswordView.as_view(),      name="change-password"),
+
+    # --------------------------------------------------------------- #
+    # Admin: API, Approve and block
+    # ------------------------------------------------------------------ #
+    path("admin/users/",AdminUserListView.as_view()),
+    path("admin/users/<int:user_id>/approve/", ApproveUserView.as_view()),
+    path("admin/users/<int:user_id>/block/", BlockUserView.as_view()),
+
 ]

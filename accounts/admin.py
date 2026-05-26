@@ -61,4 +61,4 @@ class UserAdmin(BaseUserAdmin):
 
     @admin.action(description="Block selected users")
     def block_users(self, request, queryset):
-        queryset.update(is_active=False)
+        queryset.update(is_active=False,is_approved=False)

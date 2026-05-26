@@ -1,12 +1,13 @@
 from django.contrib.auth import get_user_model
 from rest_framework import generics, status
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated,IsAdminUser
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
+from .models import User
 
 from .serializers import (
     RegisterSerializer,
@@ -231,3 +232,54 @@ class ChangePasswordView(APIView):
             {"message": "Password updated successfully."},
             status=status.HTTP_200_OK,
         )
+    
+# ======================================================================= #
+#  Admin APIS
+# All Users
+# ======================================================================= #
+class AdminUserListView(APIView):
+    permission_classes= [IsAdminUser]
+
+    def get(self,request):
+        users= User.objects.all().order_by('-date_joined')
+        serializer= UserProfileSerializer(users,many=True)
+        return Response({
+            "count":users.count(),
+            "users":serializer.data
+        })
+
+# ======================================================================= #
+#  Approving Users
+#  
+# ======================================================================= #
+class ApproveUserView(APIView):
+    permission_classes = [IsAdminUser]
+
+    def patch(self, request, user_id):
+        try:
+            user = User.objects.get(id=user_id)
+            user.is_approved = True
+            user.save()
+
+            return Response({"message": "User approved successfully"})
+        except User.DoesNotExist:
+            return Response({"error": "User not found"}, status=404)
+
+# ======================================================================= #
+#  Block Users
+#  
+# ======================================================================= # 
+class BlockUserView(APIView):
+    permission_classes = [IsAdminUser]
+
+    def patch(self, request, user_id):
+        try:
+            user = User.objects.get(id=user_id)
+            user.is_active = False
+            user.is_approved = False
+            user.save()
+
+            return Response({"message": "User blocked successfully"})
+        except User.DoesNotExist:
+            return Response({"error": "User not found"}, status=404)
+
