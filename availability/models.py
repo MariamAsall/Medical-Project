@@ -2,6 +2,7 @@ from django.db import models
 
 
 from accounts.models import User
+from doctors.models import DoctorProfile
 
 # Create your models here.
 
@@ -16,7 +17,7 @@ class DoctorAvailability(models.Model):
           (5,'Saturday'),
             (6,'Sunday'),  )
     
-    doctor=models.ForeignKey(User, on_delete=models.CASCADE,related_name='availability'  )
+    doctor=models.ForeignKey(DoctorProfile, on_delete=models.CASCADE,related_name='availability'  )
 
     weekday=models.IntegerField( choices=DAYS)
 
