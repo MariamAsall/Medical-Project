@@ -3,9 +3,9 @@ from django.db import models
 from accounts.models import User
 
 # Create your models here.
+from doctors.models import DoctorProfile 
 
-
-
+from patients.models import PatientProfile
 
 
 class Appointments(models.Model):
@@ -16,9 +16,9 @@ class Appointments(models.Model):
         ('cancelled','Cancelled')
     )
 
-    doctor=models.ForeignKey(  User, on_delete=models.CASCADE, related_name='doctor_appointments' )
+    doctor=models.ForeignKey(  DoctorProfile, on_delete=models.CASCADE, related_name='doctor_appointments' )
 
-    patient=models.ForeignKey(   User, on_delete=models.CASCADE,  related_name='patient_appointments')
+    patient=models.ForeignKey(   PatientProfile, on_delete=models.CASCADE,  related_name='patient_appointments')
 
     date_time=models.DateTimeField()
     reason=models.TextField()
