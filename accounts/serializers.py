@@ -91,7 +91,6 @@ class RegisterSerializer(serializers.ModelSerializer):
                 {"password_confirm": "Passwords do not match."}
             )
 
-        # Prevent ADMIN self-registration
         if attrs.get("role") == User.Role.ADMIN:
             raise serializers.ValidationError(
                 {"role": "Admin accounts cannot be created via registration."}
@@ -104,7 +103,6 @@ class RegisterSerializer(serializers.ModelSerializer):
 
         user = User(**validated_data)
         user.set_password(password)
-        # Newly registered users require admin approval
         user.is_approved = False
         user.is_active   = True
         user.save()
@@ -157,8 +155,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
     """
     Safe read representation of a User. No sensitive fields exposed.
     Used by Doctor / Patient apps when they embed user info.
-
-    Owner : Mariam (shared contract — do NOT modify fields without team sync)
     """
 
     full_name = serializers.SerializerMethodField()
@@ -189,8 +185,6 @@ class UserUpdateSerializer(serializers.ModelSerializer):
     """
     Allows authenticated users to update their own profile details.
     Password changes are handled by a dedicated endpoint.
-
-    Owner : Mariam
     """
 
     class Meta:
