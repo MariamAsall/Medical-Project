@@ -35,8 +35,6 @@ class AvailabilitySerializer(serializers.ModelSerializer):
 
         if start_time >= end_time:
 
-            raise serializers.ValidationError(
-                "End time must be after start time."
-            )
+            raise serializers.ValidationError(    "End time must be after start time."  )
 
         return data

@@ -60,11 +60,9 @@ class CanManageAppointments(BasePermission):
         if user.role == "ADMIN":
             return True
 
-        # FIXED: Compare the User instance attached to the doctor profile
         if (user.role == "DOCTOR" and obj.doctor.user == user):
             return True
 
-        # FIXED: Compare the User instance attached to the patient profile
         if (user.role == "PATIENT" and obj.patient.user == user):
             return True
 
