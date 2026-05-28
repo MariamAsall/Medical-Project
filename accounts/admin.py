@@ -52,7 +52,6 @@ class UserAdmin(BaseUserAdmin):
         }),
     )
 
-    # Allow Admin to toggle approval directly from the list view
     actions = ["approve_users", "block_users"]
 
     @admin.action(description="Approve selected users")

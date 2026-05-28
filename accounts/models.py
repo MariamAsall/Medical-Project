@@ -9,9 +9,7 @@ class User(AbstractUser):
         DOCTOR  = "DOCTOR",  "Doctor"
         PATIENT = "PATIENT", "Patient"
 
-    # ------------------------------------------------------------------ #
-    # Core fields
-    # ------------------------------------------------------------------ #
+
     role = models.CharField(
         max_length=10,
         choices=Role.choices,
@@ -30,13 +28,10 @@ class User(AbstractUser):
         blank=True,
     )
 
-    # Use email as the login identifier instead of username
     USERNAME_FIELD  = "email"
     REQUIRED_FIELDS = ["username", "first_name", "last_name"]
 
-    # ------------------------------------------------------------------ #
-    # Convenience properties — used by permission classes & serializers
-    # ------------------------------------------------------------------ #
+
     @property
     def is_admin_user(self) -> bool:
         return self.role == self.Role.ADMIN
@@ -48,10 +43,7 @@ class User(AbstractUser):
     @property
     def is_patient_user(self) -> bool:
         return self.role == self.Role.PATIENT
-
-    # ------------------------------------------------------------------ #
-    # String representation
-    # ------------------------------------------------------------------ #
+    
     def __str__(self) -> str:
         return f"{self.get_full_name()} ({self.role}) — {self.email}"
 
