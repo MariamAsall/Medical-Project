@@ -65,20 +65,24 @@ class AppointmenstViewSet(viewsets.ModelViewSet):
             return AppointmentCreateSerializer
 
         return AppointmentSerializer
-
-    def perform_create(self, serializer):
-
-        serializer.save(patient=self.request.user.patient_profile)
-
     
     def perform_create(self, serializer):
         patient_profile= self.request.user.patient_profile
         appointment=serializer.save(patient=patient_profile)
 
+        print("Sending email to:", appointment.patient.user.email)
+
+            # Email to patient
         send_appointment_email(
         "Appointment Booked",
         f"Your appointment has been booked successfully for {appointment.date_time}.",
         appointment.patient.user.email,
+        )
+        # Email to doctor
+        send_appointment_email(
+            "New Appointment",
+            f"You have a new appointment from {appointment.patient.user.get_full_name()} at {appointment.date_time}.",
+            appointment.doctor.user.email,
         )
     
 
