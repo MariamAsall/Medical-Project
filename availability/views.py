@@ -1,26 +1,43 @@
-from django.shortcuts import render
-
-from availability.serlizer import AvailabilitySerializer
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework import viewsets
 
 from availability.models import DoctorAvailability
 
-from appointments.permissions import CanManageDoctorAvailability
+from availability.serlizer import AvailabilitySerializer
+
+from appointments.permissions import (
+    CanManageDoctorAvailability
+)
 
 
-# Create your views here.
+class AvailabilityViewSet(viewsets.ModelViewSet):
 
+    permission_classes = [ CanManageDoctorAvailability]
 
-class availabilityViewSet(viewsets.ModelViewSet):
+    serializer_class = AvailabilitySerializer
 
-    permission_classes = [CanManageDoctorAvailability]
-    
-    queryset = DoctorAvailability.objects.all()
-    def get_serializer_class(self):
+    def get_queryset(self):
 
-        return AvailabilitySerializer
+        user = self.request.user
 
+        if user.role == "ADMIN":
 
+            return DoctorAvailability.objects.all()
 
+        if user.role == "DOCTOR":
 
+            if hasattr(user, 'doctorprofile'):
+
+                return DoctorAvailability.objects.filter(doctor=user.doctorprofile )
+
+        return DoctorAvailability.objects.none()
+
+    def perform_create(self, serializer):
+
+        user = self.request.user
+
+        if user.role == "DOCTOR":
+
+            serializer.save(doctor=user.doctorprofile)
+        else:
+
+            serializer.save()

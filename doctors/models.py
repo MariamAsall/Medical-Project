@@ -20,7 +20,7 @@ class DoctorProfile(models.Model):
     specialty = models.ForeignKey(Specialty, on_delete=models.SET_NULL, null=True, related_name='doctors')
 
     def __str__(self):
-        return self.user.username
+        return self.user.username 
 
 
 class DoctorAvailability(models.Model):
