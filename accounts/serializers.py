@@ -5,18 +5,7 @@ from rest_framework.validators import UniqueValidator
 
 User = get_user_model()
 
-
-# ======================================================================= #
-#  REGISTRATION SERIALIZER
-# ======================================================================= #
 class RegisterSerializer(serializers.ModelSerializer):
-    """
-    Handles new user registration for Doctors and Patients.
-    Admins are created only via Django Admin / management commands.
-
-    Owner : Mariam
-    API   : POST /register/
-    """
 
     email = serializers.EmailField(
         required=True,
@@ -68,9 +57,6 @@ class RegisterSerializer(serializers.ModelSerializer):
             "last_name":  {"required": True},
         }
 
-    # ------------------------------------------------------------------ #
-    # Field-level validation
-    # ------------------------------------------------------------------ #
     def validate_username(self, value: str) -> str:
         if len(value) < 3:
             raise serializers.ValidationError(
@@ -98,50 +84,31 @@ class RegisterSerializer(serializers.ModelSerializer):
                 "Phone number must contain only digits (optionally prefixed with '+')."
             )
         return value
-
-    # ------------------------------------------------------------------ #
-    # Object-level validation
-    # ------------------------------------------------------------------ #
+    
     def validate(self, attrs: dict) -> dict:
         if attrs["password"] != attrs["password_confirm"]:
             raise serializers.ValidationError(
                 {"password_confirm": "Passwords do not match."}
             )
 
-        # Prevent ADMIN self-registration
         if attrs.get("role") == User.Role.ADMIN:
             raise serializers.ValidationError(
                 {"role": "Admin accounts cannot be created via registration."}
             )
         return attrs
 
-    # ------------------------------------------------------------------ #
-    # Create user
-    # ------------------------------------------------------------------ #
     def create(self, validated_data: dict) -> User:
         validated_data.pop("password_confirm")
         password = validated_data.pop("password")
 
         user = User(**validated_data)
         user.set_password(password)
-        # Newly registered users require admin approval
         user.is_approved = False
         user.is_active   = True
         user.save()
         return user
 
-
-# ======================================================================= #
-#  LOGIN SERIALIZER
-# ======================================================================= #
 class LoginSerializer(serializers.Serializer):
-    """
-    Validates login credentials.
-    JWT tokens are issued inside the view after successful validation.
-
-    Owner : Mariam
-    API   : POST /login/
-    """
 
     email    = serializers.EmailField(required=True)
     password = serializers.CharField(
@@ -184,15 +151,10 @@ class LoginSerializer(serializers.Serializer):
         return attrs
 
 
-# ======================================================================= #
-#  USER PROFILE SERIALIZER  (read-only; shared across apps as a contract)
-# ======================================================================= #
 class UserProfileSerializer(serializers.ModelSerializer):
     """
     Safe read representation of a User. No sensitive fields exposed.
     Used by Doctor / Patient apps when they embed user info.
-
-    Owner : Mariam (shared contract — do NOT modify fields without team sync)
     """
 
     full_name = serializers.SerializerMethodField()
@@ -219,15 +181,10 @@ class UserProfileSerializer(serializers.ModelSerializer):
         return obj.get_full_name()
 
 
-# ======================================================================= #
-#  USER UPDATE SERIALIZER
-# ======================================================================= #
 class UserUpdateSerializer(serializers.ModelSerializer):
     """
     Allows authenticated users to update their own profile details.
     Password changes are handled by a dedicated endpoint.
-
-    Owner : Mariam
     """
 
     class Meta:
@@ -247,10 +204,6 @@ class UserUpdateSerializer(serializers.ModelSerializer):
             )
         return value
 
-
-# ======================================================================= #
-#  CHANGE PASSWORD SERIALIZER
-# ======================================================================= #
 class ChangePasswordSerializer(serializers.Serializer):
     """
     Allows authenticated users to change their password securely.

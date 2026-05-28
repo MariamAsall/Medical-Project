@@ -21,7 +21,7 @@ app_name = "accounts"
 
 urlpatterns = [
     # ------------------------------------------------------------------ #
-    # Auth endpoints  (all match the spec exactly)
+    # Auth endpoints 
     # ------------------------------------------------------------------ #
     path("register/",         RegisterView.as_view(),            name="register"),
     path("login/",            LoginView.as_view(),               name="login"),
@@ -37,8 +37,8 @@ urlpatterns = [
     # --------------------------------------------------------------- #
     # Admin: API, Approve and block
     # ------------------------------------------------------------------ #
-    path("admin/users/",AdminUserListView.as_view()),
-    path("admin/users/<int:user_id>/approve/", ApproveUserView.as_view()),
-    path("admin/users/<int:user_id>/block/", BlockUserView.as_view()),
+    path("admin/users/",AdminUserListView.as_view(),    name="admin-users"),
+    path("admin/users/<int:user_id>/approve/", ApproveUserView.as_view(), name="approve-user"),
+    path("admin/users/<int:user_id>/block/", BlockUserView.as_view(),name="block-user"),
 
 ]
