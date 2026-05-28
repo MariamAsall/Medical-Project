@@ -4,15 +4,12 @@ from availability.models import DoctorAvailability
 
 from availability.serlizer import AvailabilitySerializer
 
-from appointments.permissions import (
-    CanManageDoctorAvailability
-)
+from appointments.permissions import ( CanManageDoctorAvailability)
 
 
 class AvailabilityViewSet(viewsets.ModelViewSet):
 
     permission_classes = [ CanManageDoctorAvailability]
-
     serializer_class = AvailabilitySerializer
 
     def get_queryset(self):
@@ -36,8 +33,6 @@ class AvailabilityViewSet(viewsets.ModelViewSet):
         user = self.request.user
 
         if user.role == "DOCTOR":
-
             serializer.save(doctor=user.doctorprofile)
         else:
-
             serializer.save()

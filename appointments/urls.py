@@ -15,6 +15,5 @@ urlpatterns = [
 
     path("", include(router.urls)),
 
-   
     path("admin/appointments/",AdminAppointmentListView.as_view()),
 ]
