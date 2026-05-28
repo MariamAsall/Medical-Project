@@ -271,7 +271,7 @@ class ApproveUserView(APIView):
 
             return Response({"message": "User approved successfully"})
         except User.DoesNotExist:
-            return Response({"error": "User not found"}, status=404)
+            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
 # ======================================================================= #
 #  Block Users
@@ -294,5 +294,5 @@ class BlockUserView(APIView):
 
             return Response({"message": "User blocked successfully"})
         except User.DoesNotExist:
-            return Response({"error": "User not found"}, status=404)
+            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 

@@ -15,6 +15,11 @@ class UserAdmin(BaseUserAdmin):
         "date_joined",
         "last_login",
     )
+    list_editable=(
+        "is_approved",
+        "is_active",
+    )
+    list_per_page= 20
     list_filter   = ("role", "is_approved", "is_active", "is_staff")
     search_fields = ("email", "username", "first_name", "last_name")
     ordering      = ("-date_joined",)

@@ -10,6 +10,7 @@ urlpatterns = [
     path('api/doctors/', include('doctors.urls')),
     path('api/appointments/', include('appointments.urls')),
     path('api/availability/', include('availability.urls')),
+
     #path('api/notifications/', include('notifications.urls')),
 
 ]
