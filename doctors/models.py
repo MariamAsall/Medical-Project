@@ -23,18 +23,3 @@ class DoctorProfile(models.Model):
         return self.user.username 
 
 
-class DoctorAvailability(models.Model):
-    DAYS = [
-        ('sat', 'Saturday'),
-        ('sun', 'Sunday'),
-        ('mon', 'Monday'),
-        ('tue', 'Tuesday'),
-        ('wed', 'Wednesday'),
-        ('thu', 'Thursday'),
-        ('fri', 'Friday'),
-    ]
-    doctor = models.ForeignKey(DoctorProfile, on_delete=models.CASCADE, related_name='availabilities')
-    day = models.CharField(max_length=10, choices=DAYS)
-    start_time = models.TimeField()
-    end_time = models.TimeField()
-    is_active = models.BooleanField(default=True)
