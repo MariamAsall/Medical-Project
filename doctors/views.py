@@ -6,6 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from .models import DoctorProfile, DoctorAvailability, Specialty
 from .serializers import DoctorProfileSerializer, DoctorAvailabilitySerializer, SpecialtySerializer
 from .permissions import IsApprovedDoctor
+from rest_framework.permissions import IsAdminUser
 
 class SpecialtyViewSet(viewsets.ModelViewSet):
     queryset = Specialty.objects.all()
@@ -15,7 +16,6 @@ class SpecialtyViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
             # Only admin can write
-            from rest_framework.permissions import IsAdminUser
             return [IsAdminUser()]
 
         # Everyone logged in can read
@@ -24,7 +24,7 @@ class SpecialtyViewSet(viewsets.ModelViewSet):
 
 class DoctorProfileViewSet(viewsets.ModelViewSet):
     serializer_class   = DoctorProfileSerializer
-    #permission_classes = [IsApprovedDoctor]
+    permission_classes = [IsApprovedDoctor]
 
     def get_queryset(self):
         return DoctorProfile.objects.filter(user=self.request.user)
@@ -58,18 +58,3 @@ class DoctorProfileViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-
-class DoctorAvailabilityViewSet(viewsets.ModelViewSet):
-    serializer_class   = DoctorAvailabilitySerializer
-    permission_classes = [IsApprovedDoctor]
-
-    def get_queryset(self):
-        return DoctorAvailability.objects.filter(doctor=self.request.user)
-    
-    def perform_create(self, serializer):
-        serializer.save(doctor=self.request.user)
-
-    def get_serializer_context(self):
-        context = super().get_serializer_context()
-        context['request'] = self.request
-        return context

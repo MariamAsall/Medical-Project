@@ -37,19 +37,3 @@ class DoctorProfileSerializer(serializers.ModelSerializer):
             )
         return value
 
-
-class DoctorAvailabilitySerializer(serializers.ModelSerializer):
-    class Meta:
-        model  = DoctorAvailability
-        fields = ['id', 'doctor', 'day', 'start_time', 'end_time', 'is_active']
-        read_only_fields = ['id', 'doctor']
-
-    def validate(self, data):
-        start = data.get('start_time')
-        end   = data.get('end_time')
-
-        if start and end and end <= start:
-            raise serializers.ValidationError(
-                'End time must be after start time.'
-            )
-        return data
