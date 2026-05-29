@@ -10,9 +10,8 @@ const authSlice = createSlice({
     name: 'auth',
     initialState,
     reducers: {
-        loginSuccess: (state, action) => {
-            state.user = action.payload.user;
-            state.role = action.payload.role;
+        loginSuccess: (state, action) => {  state.user = action.payload.user;
+                state.role = action.payload.role;
             state.isAuthenticated = true;
         },
         logout: (state) => {
@@ -20,8 +19,7 @@ const authSlice = createSlice({
             state.role = null;
             state.isAuthenticated = false;
             localStorage.removeItem('access_token');
-            localStorage.removeItem('refresh_token');
-        },
+            localStorage.removeItem('refresh_token'); },
     },
 });
 
