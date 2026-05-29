@@ -1,48 +1,55 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-
-import {
-  Routes,
-  Route,
-} from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 
 import Login from "./components/login";
 import Register from "./components/register";
+
+import DoctorAvailability from "./components/DoctorAvailability";
+import DoctorProfileForm from "./components/DoctorProfileForm";
+import AppointmentsPage from "./components/AppointmentsPage";
+import DoctorAppointments from "./components/DoctorAppointments";
+
 import ProtectedRoute from "./components/ProtectedRoute";
 
-function Unauthorized() {
-  return <h1>🚫 Unauthorized Access</h1>;
-}
-
 function App() {
-  return (
-    <Routes>
+    return (
+        <Routes>
 
-      <Route path="/login" element={<Login />} />
+            {/* PUBLIC */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
 
-      <Route path="/register" element={<Register />} />
+            {/* PROTECTED GROUP */}
+            <Route
+                element={<ProtectedRoute allowedRoles={["patient", "doctor", "admin"]} />}
+            >
+                <Route
+                    path="/appointments"
+                    element={<AppointmentsPage />}
+                />
+            </Route>
 
-      <Route path="/unauthorized" element={<Unauthorized />} />
+            {/* DOCTOR ONLY */}
+            <Route
+                element={<ProtectedRoute allowedRoles={["doctor"]} />}
+            >
+                <Route
+                    path="/doctor/profile"
+                    element={<DoctorProfileForm />}
+                />
 
-      <Route
-        path="/"
-        element={
-          <ProtectedRoute
-            allowedRoles={[
-              "admin",
-              "doctor",
-              "patient",
-            ]}
-          >
-            <h1>Protected Content</h1>
-          </ProtectedRoute>
-        }
-      />
+                <Route
+                    path="/doctor/availability"
+                    element={<DoctorAvailability />}
+                />
 
-    </Routes>
-  );
+                <Route
+                    path="/doctor/appointments"
+                    element={<DoctorAppointments />}
+                />
+            </Route>
+
+        </Routes>
+    );
 }
 
-export default App
+export default App;
