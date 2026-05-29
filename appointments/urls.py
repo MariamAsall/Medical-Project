@@ -7,7 +7,7 @@ from appointments.views import AppointmenstViewSet, BookAppointmentView
 
 router = DefaultRouter()
 
-router.register( r"", AppointmenstViewSet,  basename="appointments")
+router.register( r"manage", AppointmenstViewSet,  basename="appointments")
 
 urlpatterns = [
 
