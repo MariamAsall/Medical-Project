@@ -9,6 +9,9 @@ function Register() {
         username: "",
         email: "",
         password: "",
+        password_confirm: "",
+        first_name: "",
+        last_name: "",
         role: "PATIENT",
     });
 
@@ -24,66 +27,47 @@ function Register() {
 
         try {
             await api.post("auth/register/", formData);
-
             navigate("/login");
         } catch (error) {
-            console.log(error.response.data);
+            console.log(error.response?.data);
         }
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <label> username </label>
-            <input
-                type="text"
-                name="username"
-                placeholder="Username"
-                onChange={handleChange}
-            />
-<label> email </label>
-            <input
-                type="email"
-                name="email"
-                placeholder="Email"
-                onChange={handleChange}
-            />
+        <div className="container d-flex justify-content-center align-items-center my-5">
 
-        <label> password </label>
-            <input
-                type="password"
-                name="password"
-                placeholder="Password"
-                onChange={handleChange}
-            />
+            <div className="card shadow p-4" style={{ width: "450px" }}>
 
-            <label> password_confirm </label>
-            <input type="password" name="password_confirm" placeholder="Confirm Password" onChange={handleChange} />
+                <h3 className="text-center mb-4">Register</h3>
 
+                <form onSubmit={handleSubmit}>
 
-<label> first_name </label>
-            <input type ="text" name="first_name" placeholder="First Name" onChange={handleChange} />
-            <label> last_name </label>
-            <input type="text" name="last_name" placeholder="Last Name" onChange={handleChange} />
+                    <input className="form-control mb-2" name="username" placeholder="Username" onChange={handleChange} />
 
+                    <input className="form-control mb-2" name="email" placeholder="Email" onChange={handleChange} />
 
-<label> role </label>
-            <select
-                name="role"
-                onChange={handleChange}
-            >
-                <option value="PATIENT">
-                    Patient
-                </option>
+                    <input className="form-control mb-2" type="password" name="password" placeholder="Password" onChange={handleChange} />
 
-                <option value="DOCTOR">
-                    Doctor
-                </option>
-            </select>
+                    <input className="form-control mb-2" type="password" name="password_confirm" placeholder="Confirm Password" onChange={handleChange} />
 
-            <button type="submit">
-                Register
-            </button>
-        </form>
+                    <input className="form-control mb-2" name="first_name" placeholder="First Name" onChange={handleChange} />
+
+                    <input className="form-control mb-2" name="last_name" placeholder="Last Name" onChange={handleChange} />
+
+                    <select className="form-select mb-3" name="role" onChange={handleChange}>
+                        <option value="PATIENT">Patient</option>
+                        <option value="DOCTOR">Doctor</option>
+                    </select>
+
+                    <button className="btn btn-success w-100">
+                        Register
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
     );
 }
 
