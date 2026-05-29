@@ -3,8 +3,10 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from .models import DoctorProfile, DoctorAvailability, Specialty
-from .serializers import DoctorProfileSerializer, DoctorAvailabilitySerializer, SpecialtySerializer
+from .models import DoctorProfile, Specialty
+
+
+from .serializers import DoctorProfileSerializer, SpecialtySerializer
 from .permissions import IsApprovedDoctor
 from rest_framework.permissions import IsAdminUser
 
