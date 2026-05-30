@@ -27,6 +27,7 @@ import "react-toastify/dist/ReactToastify.css";
 function App() {
 
   return (
+    <>
     <Routes>
 
       <Route path="/login" element={<Login />} />
@@ -75,6 +76,7 @@ function App() {
 
     </Routes>
     <ToastContainer position="top-right" autoClose={3000} />
+    </>
   );
 }
 

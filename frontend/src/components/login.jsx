@@ -4,6 +4,8 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { loginSuccess } from "./authslice.jsx";
 import { Link } from "react-router-dom";
+import { notifySuccess, notifyError } from "../utils/notify";
+
 function Login() {
     const [formData, setFormData] = useState({
         email: "",
@@ -23,56 +25,52 @@ function Login() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-    try {
+        try {
+            const response = await api.post("auth/login/", formData);
 
-        const response = await api.post(
-            "auth/login/",
-            formData
-        );
+            localStorage.setItem(
+                "access_token",
+                response.data.tokens.access
+            );
 
-        localStorage.setItem(
-            "access_token",
-            response.data.tokens.access
-        );
+            localStorage.setItem(
+                "refresh_token",
+                response.data.tokens.refresh
+            );
 
-        localStorage.setItem(
-            "refresh_token",
-            response.data.tokens.refresh
-        );
+            const role = response.data.user.role.toLowerCase();
 
-        localStorage.setItem(
-            "role",
-            response.data.user.role.toLowerCase()
-        );
+            localStorage.setItem("role", role);
 
-        dispatch(
-            loginSuccess({
-                user: response.data.user,
-                role: response.data.user.role.toLowerCase(),
-            })
-        );
+            dispatch(
+                loginSuccess({
+                    user: response.data.user,
+                    role: role,
+                })
+            );
 
-        const role =
-            response.data.user.role.toLowerCase();
+            //  SUCCESS NOTIFICATION
+            notifySuccess("Login successful ");
+
             console.log(role);
 
-        if (role === "admin") {
+            if (role === "admin") {
+                navigate("/admin");
+            } else if (role === "doctor") {
+                navigate("/doctor");
+            } else {
+                navigate("/patient");
+            }
 
-            navigate("/admin");
+        } catch (error) {
+            console.log(error.response?.data);
 
-        } else if (role === "doctor") {
-
-            navigate("/doctor");
-
-        } else {
-
-            navigate("/patient");
+            //  ERROR NOTIFICATION
+            notifyError(
+                error.response?.data?.detail ||
+                "Login failed "
+            );
         }
-
-}   catch (error) {
-
-        console.log(error.response?.data);
-}
     };
 
     return (
@@ -107,17 +105,18 @@ function Login() {
                     <button className="btn btn-primary w-100">
                         Login
                     </button>
+
                     <div className="text-center mt-3">
 
-    <p className="mb-1">
-        Don't have an account?
-    </p>
+                        <p className="mb-1">
+                            Don't have an account?
+                        </p>
 
-    <Link to="/register" className="btn btn-link">
-        Create account
-    </Link>
+                        <Link to="/register" className="btn btn-link">
+                            Create account
+                        </Link>
 
-</div>
+                    </div>
 
                 </form>
 
