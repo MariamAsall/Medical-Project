@@ -10,46 +10,78 @@ import DoctorAppointments from "./components/DoctorAppointments";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 
+
+import AdminDashboard from "./pages/AdminDashboard";
+import DoctorDashboard from "./pages/DoctorDashboard";
+import PatientDashboard from "./pages/PatientDashboard";
+import Unauthorized from "./pages/Unauthorized";
+import AdminUsers from "./pages/AdminUsers";
+import PatientAppointments from "./pages/PatientAppointments";
+import DoctorAppointments from "./pages/DoctorAppointments";
+
+
+import DoctorLayout from "./layouts/DoctorLayout";
+import AdminLayout from "./layouts/AdminLayout";
+import PatientLayout from './layouts/PatientLayout';
+
+
+
+//Notification
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+
 function App() {
-    return (
-        <Routes>
 
-            {/* PUBLIC */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+  return (
+    <>
+      <Routes>
 
-            {/* PROTECTED GROUP */}
-            <Route
-                element={<ProtectedRoute allowedRoles={["patient", "doctor", "admin"]} />}
-            >
-                <Route
-                    path="/appointments"
-                    element={<AppointmentsPage />}
-                />
-            </Route>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/unauthorized" element={<Unauthorized />} />
 
-            {/* DOCTOR ONLY */}
-            <Route
-                element={<ProtectedRoute allowedRoles={["doctor"]} />}
-            >
-                <Route
-                    path="/doctor/profile"
-                    element={<DoctorProfileForm />}
-                />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <AdminLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<AdminDashboard />} />
+          <Route path="users" element={<AdminUsers />} />
+        </Route>
 
-                <Route
-                    path="/doctor/availability"
-                    element={<DoctorAvailability />}
-                />
+        <Route
+            path="/doctor"
+            element={
+              <ProtectedRoute allowedRoles={["doctor"]}>
+                <DoctorLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<DoctorDashboard />} />
+            <Route path="appointments" element={<DoctorAppointments />} />
+          </Route>
 
-                <Route
-                    path="/doctor/appointments"
-                    element={<DoctorAppointments />}
-                />
-            </Route>
+        <Route
+          path="/patient"
+          element={
+            <ProtectedRoute allowedRoles={["patient"]}>
+              <PatientLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<PatientDashboard />} />
+          <Route path="appointments" element={<PatientAppointments />} />
+        </Route>
 
-        </Routes>
-    );
+      </Routes>
+
+      <ToastContainer position="top-right" autoClose={3000} />
+    </>
+  );
 }
 
 export default App;

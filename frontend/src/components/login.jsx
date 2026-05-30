@@ -3,6 +3,9 @@ import api from "../api/axios";
 import { useDispatch } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
 import { loginSuccess } from "./authslice.jsx";
+import { Link } from "react-router-dom";
+import { notifySuccess, notifyError } from "../utils/notify";
+
 
 function Login() {
     const [formData, setFormData] = useState({
@@ -39,25 +42,26 @@ function Login() {
                 response.data.tokens.refresh
             );
 
-          const role = response.data.user.role?.toLowerCase();
+            const role = response.data.user.role.toLowerCase();
 
-console.log("ROLE FROM API:", role);
+            localStorage.setItem("role", role);
 
-dispatch(
-    loginSuccess({
-        isAuthenticated: true,
-        role: role,
-    })
-);
+            dispatch(
+                loginSuccess({
+                    isAuthenticated: true,
+                    role: response.data.user.role.toLowerCase(),
+                })
+            );
 
-            if (role === "doctor") {
-                navigate("/doctor/profile");
-            } else {
-                navigate("/appointments");
-            }
-
+            navigate("/");
         } catch (error) {
             console.log(error.response?.data);
+
+            //  ERROR NOTIFICATION
+            notifyError(
+                error.response?.data?.detail ||
+                "Login failed "
+            );
         }
     };
 
@@ -110,17 +114,16 @@ dispatch(
                     </button>
 
                     <div className="text-center mt-3">
-                        <p className="mb-1">
-                            Don't have an account?
-                        </p>
 
-                        <Link
-                            to="/register"
-                            className="btn btn-link"
-                        >
-                            Create account
-                        </Link>
-                    </div>
+    <p className="mb-1">
+        Don't have an account?
+    </p>
+
+    <Link to="/register" className="btn btn-link">
+        Create account
+    </Link>
+
+</div>
 
                 </form>
             </div>

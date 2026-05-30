@@ -10,9 +10,10 @@ class SpecialtySerializer(serializers.ModelSerializer):
 
 
 class DoctorProfileSerializer(serializers.ModelSerializer):
+    user_data = serializers.SerializerMethodField()
     class Meta:
         model  = DoctorProfile
-        fields = ['id', 'user', 'specialty', 'bio', 'phone', 
+        fields = ['id', 'user','user_data', 'specialty', 'bio', 'phone', 
                   'experience_years', 'consultation_fees', 'profile_image',]
         read_only_fields = ['id', 'user']
 
@@ -36,4 +37,13 @@ class DoctorProfileSerializer(serializers.ModelSerializer):
                 'Fee cannot be negative.'
             )
         return value
+    
+    
+    def get_user_data(self, obj):
+        return {
+            "id": obj.user.id,
+            "first_name": obj.user.first_name,
+            "last_name": obj.user.last_name,
+            "email": obj.user.email,
+        }
 
