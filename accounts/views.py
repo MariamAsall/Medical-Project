@@ -118,12 +118,6 @@ class LoginView(APIView):
 #  POST /logout/
 # ======================================================================= #
 class LogoutView(APIView):
-    """
-    Blacklists the provided refresh token, effectively logging out the user.
-    Requires the refresh token in the request body: { "refresh": "<token>" }
-
-    Owner : Mariam
-    """
 
     permission_classes = [IsAuthenticated]
 
@@ -156,12 +150,6 @@ class LogoutView(APIView):
 #  POST /refresh-token/
 # ======================================================================= #
 class CustomTokenRefreshView(TokenRefreshView):
-    """
-    Wraps SimpleJWT's TokenRefreshView for a consistent response format.
-
-    Owner : Mariam
-    API   : POST /refresh-token/
-    """
 
     def post(self, request: Request, *args, **kwargs) -> Response:
         serializer = self.get_serializer(data=request.data)
@@ -185,13 +173,6 @@ class CustomTokenRefreshView(TokenRefreshView):
 #  GET /me/
 # ======================================================================= #
 class MeView(generics.RetrieveUpdateAPIView):
-    """
-    GET  → returns the logged-in user's profile.
-    PATCH/PUT → updates allowed profile fields (see UserUpdateSerializer).
-
-    Owner : Mariam
-    API   : GET|PATCH /me/
-    """
 
     permission_classes = [IsAuthenticated]
 
@@ -213,12 +194,6 @@ class MeView(generics.RetrieveUpdateAPIView):
 #  POST /change-password/
 # ======================================================================= #
 class ChangePasswordView(APIView):
-    """
-    Allows an authenticated user to update their password.
-
-    Owner : Mariam
-    API   : POST /change-password/
-    """
 
     permission_classes = [IsAuthenticated]
 
