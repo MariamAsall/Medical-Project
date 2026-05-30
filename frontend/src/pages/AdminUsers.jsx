@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-//notification for Approve and Block
-import { toast } from "react-toastify";
 import api from "../api/axios";
+//notification for Approve and Block
+import { notifySuccess, notifyError } from "../utils/notify";
 
 function AdminUsers() {
 
@@ -13,7 +13,10 @@ function AdminUsers() {
             .then((res) => {
                 setUsers(res.data.users);
             })
-            .catch((err) => console.log(err));
+            .catch((err) => {
+                console.log(err);
+                notifyError("Failed to fetch users");
+            });
     };
 
     useEffect(() => {
@@ -27,15 +30,14 @@ function AdminUsers() {
 
             await api.patch(`auth/admin/users/${id}/approve/`);
 
-            //Notification Approvement
-            toast.success("User approved successfully");
+            notifySuccess("User approved successfully");
 
             fetchUsers();
 
-    }   catch (err) {
-            toast.error("Something went wrong");
+        } catch (err) {
+            notifyError("Something went wrong");
             console.log(err);
-    }   finally {
+        } finally {
             setLoadingId(null);
         }
     };
@@ -46,14 +48,15 @@ function AdminUsers() {
             setLoadingId(id);
 
             await api.patch(`auth/admin/users/${id}/block/`);
-            //Notification Block
-            toast.success("User blocked successfully");
+
+            notifySuccess("User blocked successfully");
+
             fetchUsers();
 
-    }   catch (err) {
-            toast.error("Something went wrong");
+        } catch (err) {
+            notifyError("Something went wrong");
             console.log(err);
-    }   finally {
+        } finally {
             setLoadingId(null);
         }
     };
@@ -77,36 +80,44 @@ function AdminUsers() {
                 </thead>
 
                 <tbody>
+
                     {users.map((user) => (
                         <tr key={user.id}>
+
                             <td>{user.id}</td>
                             <td>{user.email}</td>
                             <td>{user.username}</td>
                             <td>{user.role}</td>
+
                             <td>
                                 {user.is_approved ? "Yes" : "No"}
                             </td>
 
                             <td>
-                                <button
-                                        className="btn btn-success btn-sm me-2"
-                                        onClick={() => handleApprove(user.id)}
-                                        disabled={loadingId === user.id}
-                                    >
-                                        {loadingId === user.id ? "Loading..." : "Approve"}
-                                    </button>
 
-                                    <button
-                                        className="btn btn-danger btn-sm"
-                                        onClick={() => handleBlock(user.id)}
-                                        disabled={loadingId === user.id}
-                                    >
-                                        {loadingId === user.id ? "Loading..." : "Block"}
-                                    </button>
+                                {/* Approve */}
+                                <button
+                                    className="btn btn-success btn-sm me-2"
+                                    onClick={() => handleApprove(user.id)}
+                                    disabled={loadingId === user.id}
+                                >
+                                    {loadingId === user.id ? "Loading..." : "Approve"}
+                                </button>
+
+                                {/* Block */}
+                                <button
+                                    className="btn btn-danger btn-sm"
+                                    onClick={() => handleBlock(user.id)}
+                                    disabled={loadingId === user.id}
+                                >
+                                    {loadingId === user.id ? "Loading..." : "Block"}
+                                </button>
+
                             </td>
 
                         </tr>
                     ))}
+
                 </tbody>
 
             </table>

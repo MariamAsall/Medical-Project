@@ -1,133 +1,63 @@
 import { useEffect, useState } from "react";
 import api from "../api/axios";
+import { useSelector } from "react-redux";
 
 function DoctorDashboard() {
-    const [appointments, setAppointments] = useState([]);
+
+    const { user } = useSelector((state) => state.auth);
+
+    const [doctor, setDoctor] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    const fetchAppointments = async () => {
+    const fetchDoctor = async () => {
         try {
-            const res = await api.get("appointments/");
+            const res = await api.get("doctors/all/");
 
-            console.log("API RESPONSE:", res.data);
+            const doctors = Array.isArray(res.data)
+                ? res.data
+                : res.data.results || [];
 
-            // 🔥 handling different backend shapes
-            const data =
-                res.data?.results ||
-                res.data?.appointments ||
-                res.data ||
-                [];
+            const myDoctor = doctors.find(
+                (d) => d.user_data?.id === user?.id
+            );
 
-            // 🔥 ensure it's always array
-            setAppointments(Array.isArray(data) ? data : []);
+            setDoctor(myDoctor);
 
         } catch (err) {
-            console.log("ERROR:", err.response?.data || err);
-            setAppointments([]);
+            console.log(err);
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchAppointments();
-    }, []);
+        fetchDoctor();
+    }, [user]);
 
-    // Accept appointment
-    const handleAccept = async (id) => {
-        try {
-            await api.patch(`appointments/${id}/`, {
-                status: "accepted",
-            });
-
-            fetchAppointments();
-        } catch (err) {
-            console.log(err);
-        }
-    };
-
-    // Reject appointment
-    const handleReject = async (id) => {
-        try {
-            await api.patch(`appointments/${id}/`, {
-                status: "rejected",
-            });
-
-            fetchAppointments();
-        } catch (err) {
-            console.log(err);
-        }
-    };
-
-    if (loading) {
-        return <h3 className="text-center mt-5">Loading...</h3>;
-    }
+    if (loading) return <h3>Loading...</h3>;
+    if (!doctor) return <h3>No profile found</h3>;
 
     return (
         <div className="container mt-4">
 
-            <h2 className="mb-4">Doctor Dashboard</h2>
+            <h2>Doctor Profile</h2>
 
-            {appointments.length === 0 ? (
-                <h5>No Appointments Found</h5>
-            ) : (
-                <table className="table table-bordered">
+            <div className="card p-3 shadow mt-3">
 
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Patient</th>
-                            <th>Date</th>
-                            <th>Reason</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
+                <h4>
+                    Dr. {doctor.user_data?.first_name} {doctor.user_data?.last_name}
+                </h4>
 
-                    <tbody>
-                        {appointments.map((app) => (
-                            <tr key={app.id}>
-                                <td>{app.id}</td>
-                                <td>{app.patient}</td>
-                                <td>{app.date_time}</td>
-                                <td>{app.reason}</td>
+                <p>{doctor.specialty?.name}</p>
 
-                                <td>
-                                    <span className={`badge ${
-                                        app.status === "pending"
-                                            ? "bg-warning"
-                                            : app.status === "accepted"
-                                            ? "bg-success"
-                                            : "bg-danger"
-                                    }`}>
-                                        {app.status}
-                                    </span>
-                                </td>
+                <p>{doctor.bio}</p>
 
-                                <td>
-                                    <button
-                                        className="btn btn-success btn-sm me-2"
-                                        onClick={() => handleAccept(app.id)}
-                                        disabled={app.status !== "pending"}
-                                    >
-                                        Accept
-                                    </button>
+                <p>{doctor.consultation_fees}</p>
 
-                                    <button
-                                        className="btn btn-danger btn-sm"
-                                        onClick={() => handleReject(app.id)}
-                                        disabled={app.status !== "pending"}
-                                    >
-                                        Reject
-                                    </button>
-                                </td>
+                <p>{doctor.experience_years}</p>
 
-                            </tr>
-                        ))}
-                    </tbody>
+            </div>
 
-                </table>
-            )}
         </div>
     );
 }

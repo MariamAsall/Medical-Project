@@ -59,31 +59,35 @@ function AdminDashboard() {
 
             <div className="row g-3">
 
+                {/* USERS */}
                 <div className="col-md-3">
-                    <div className="card p-3 shadow text-center border-0">
-                        <h6 className="text-muted">Total Users</h6>
-                        <h2>{stats.users}</h2>
+                    <div className="card shadow-sm border-0 p-3 text-center">
+                        <h6 className="text-muted">Users</h6>
+                        <h2 className="text-primary">{stats.users}</h2>
                     </div>
                 </div>
 
+                {/* DOCTORS */}
                 <div className="col-md-3">
-                    <div className="card p-3 shadow text-center border-0">
+                    <div className="card shadow-sm border-0 p-3 text-center">
                         <h6 className="text-muted">Doctors</h6>
-                        <h2>{stats.doctors}</h2>
+                        <h2 className="text-success">{stats.doctors}</h2>
                     </div>
                 </div>
 
+                {/* PATIENTS */}
                 <div className="col-md-3">
-                    <div className="card p-3 shadow text-center border-0">
+                    <div className="card shadow-sm border-0 p-3 text-center">
                         <h6 className="text-muted">Patients</h6>
-                        <h2>{stats.patients}</h2>
+                        <h2 className="text-warning">{stats.patients}</h2>
                     </div>
                 </div>
 
+                {/* APPOINTMENTS */}
                 <div className="col-md-3">
-                    <div className="card p-3 shadow text-center border-0">
+                    <div className="card shadow-sm border-0 p-3 text-center">
                         <h6 className="text-muted">Appointments</h6>
-                        <h2>{stats.appointments}</h2>
+                        <h2 className="text-danger">{stats.appointments}</h2>
                     </div>
                 </div>
 
