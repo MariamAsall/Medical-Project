@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom/client'
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import App from "./App"
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import {
   BrowserRouter,
@@ -21,6 +23,7 @@ ReactDOM.createRoot(
   <Provider store={store}>
     <BrowserRouter>
       <App />
+      <ToastContainer />
     </BrowserRouter>
   </Provider>
 );

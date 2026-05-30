@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+//notification for Approve and Block
+import { toast } from "react-toastify";
 import api from "../api/axios";
 
 function AdminUsers() {
@@ -25,9 +27,13 @@ function AdminUsers() {
 
             await api.patch(`auth/admin/users/${id}/approve/`);
 
+            //Notification Approvement
+            toast.success("User approved successfully");
+
             fetchUsers();
 
     }   catch (err) {
+            toast.error("Something went wrong");
             console.log(err);
     }   finally {
             setLoadingId(null);
@@ -40,10 +46,12 @@ function AdminUsers() {
             setLoadingId(id);
 
             await api.patch(`auth/admin/users/${id}/block/`);
-
+            //Notification Block
+            toast.success("User blocked successfully");
             fetchUsers();
 
     }   catch (err) {
+            toast.error("Something went wrong");
             console.log(err);
     }   finally {
             setLoadingId(null);
