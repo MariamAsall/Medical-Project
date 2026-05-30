@@ -4,6 +4,8 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { loginSuccess } from "./authslice.jsx";
 import { Link } from "react-router-dom";
+import { notifySuccess, notifyError } from "../utils/notify";
+
 function Login() {
     const [formData, setFormData] = useState({
         email: "",
@@ -36,16 +38,38 @@ function Login() {
                 response.data.tokens.refresh
             );
 
+            const role = response.data.user.role.toLowerCase();
+
+            localStorage.setItem("role", role);
+
             dispatch(
                 loginSuccess({
-                    isAuthenticated: true,
-                    role: response.data.user.role.toLowerCase(),
+                    user: response.data.user,
+                    role: role,
                 })
             );
 
-            navigate("/");
+            //  SUCCESS NOTIFICATION
+            notifySuccess("Login successful ");
+
+            console.log(role);
+
+            if (role === "admin") {
+                navigate("/admin");
+            } else if (role === "doctor") {
+                navigate("/doctor");
+            } else {
+                navigate("/patient");
+            }
+
         } catch (error) {
             console.log(error.response?.data);
+
+            //  ERROR NOTIFICATION
+            notifyError(
+                error.response?.data?.detail ||
+                "Login failed "
+            );
         }
     };
 
@@ -81,17 +105,18 @@ function Login() {
                     <button className="btn btn-primary w-100">
                         Login
                     </button>
+
                     <div className="text-center mt-3">
 
-    <p className="mb-1">
-        Don't have an account?
-    </p>
+                        <p className="mb-1">
+                            Don't have an account?
+                        </p>
 
-    <Link to="/register" className="btn btn-link">
-        Create account
-    </Link>
+                        <Link to="/register" className="btn btn-link">
+                            Create account
+                        </Link>
 
-</div>
+                    </div>
 
                 </form>
 
