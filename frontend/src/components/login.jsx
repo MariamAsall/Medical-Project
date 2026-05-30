@@ -23,30 +23,56 @@ function Login() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        try {
-            const response = await api.post("auth/login/", formData);
+    try {
 
-            localStorage.setItem(
-                "access_token",
-                response.data.tokens.access
-            );
+        const response = await api.post(
+            "auth/login/",
+            formData
+        );
 
-            localStorage.setItem(
-                "refresh_token",
-                response.data.tokens.refresh
-            );
+        localStorage.setItem(
+            "access_token",
+            response.data.tokens.access
+        );
 
-            dispatch(
-                loginSuccess({
-                    isAuthenticated: true,
-                    role: response.data.user.role.toLowerCase(),
-                })
-            );
+        localStorage.setItem(
+            "refresh_token",
+            response.data.tokens.refresh
+        );
 
-            navigate("/");
-        } catch (error) {
-            console.log(error.response?.data);
+        localStorage.setItem(
+            "role",
+            response.data.user.role.toLowerCase()
+        );
+
+        dispatch(
+            loginSuccess({
+                user: response.data.user,
+                role: response.data.user.role.toLowerCase(),
+            })
+        );
+
+        const role =
+            response.data.user.role.toLowerCase();
+            console.log(role);
+
+        if (role === "admin") {
+
+            navigate("/admin");
+
+        } else if (role === "doctor") {
+
+            navigate("/doctor");
+
+        } else {
+
+            navigate("/patient");
         }
+
+}   catch (error) {
+
+        console.log(error.response?.data);
+}
     };
 
     return (

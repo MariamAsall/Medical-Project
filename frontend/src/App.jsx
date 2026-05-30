@@ -12,11 +12,15 @@ import Login from "./components/login";
 import Register from "./components/register";
 import ProtectedRoute from "./components/ProtectedRoute";
 
-function Unauthorized() {
-  return <h1>🚫 Unauthorized Access</h1>;
-}
+
+import AdminDashboard from "./pages/AdminDashboard";
+import DoctorDashboard from "./pages/DoctorDashboard";
+import PatientDashboard from "./pages/PatientDashboard";
+import Unauthorized from "./pages/Unauthorized";
+import AdminUsers from "./pages/AdminUsers";
 
 function App() {
+
   return (
     <Routes>
 
@@ -26,17 +30,32 @@ function App() {
 
       <Route path="/unauthorized" element={<Unauthorized />} />
 
+    <Route
+      path="/admin"
+      element={
+        <ProtectedRoute allowedRoles={["admin"]}>
+          <AdminDashboard />
+        </ProtectedRoute>
+      }
+    >
+      <Route index element={<AdminDashboard />} />
+      <Route path="users" element={<AdminUsers />} />
+    </Route>
+
       <Route
-        path="/"
+        path="/doctor"
         element={
-          <ProtectedRoute
-            allowedRoles={[
-              "admin",
-              "doctor",
-              "patient",
-            ]}
-          >
-            <h1>Protected Content</h1>
+          <ProtectedRoute allowedRoles={["doctor"]}>
+            <DoctorDashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/patient"
+        element={
+          <ProtectedRoute allowedRoles={["patient"]}>
+            <PatientDashboard />
           </ProtectedRoute>
         }
       />
