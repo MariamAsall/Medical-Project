@@ -18,6 +18,7 @@ import DoctorDashboard from "./pages/DoctorDashboard";
 import PatientDashboard from "./pages/PatientDashboard";
 import Unauthorized from "./pages/Unauthorized";
 import AdminUsers from "./pages/AdminUsers";
+import AdminLayout from "./layouts/AdminLayout";
 
 function App() {
 
@@ -34,13 +35,21 @@ function App() {
       path="/admin"
       element={
         <ProtectedRoute allowedRoles={["admin"]}>
-          <AdminDashboard />
+          <AdminLayout />
         </ProtectedRoute>
       }
     >
       <Route index element={<AdminDashboard />} />
       <Route path="users" element={<AdminUsers />} />
     </Route>
+    <Route
+        path="/admin/users"
+        element={
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <AdminUsers />
+          </ProtectedRoute>
+        }
+      />
 
       <Route
         path="/doctor"
