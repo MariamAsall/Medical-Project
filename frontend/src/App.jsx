@@ -20,6 +20,10 @@ import Unauthorized from "./pages/Unauthorized";
 import AdminUsers from "./pages/AdminUsers";
 import AdminLayout from "./layouts/AdminLayout";
 
+//Notification
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 function App() {
 
   return (
@@ -70,6 +74,7 @@ function App() {
       />
 
     </Routes>
+    <ToastContainer position="top-right" autoClose={3000} />
   );
 }
 
