@@ -9,6 +9,8 @@ from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 from .models import User
 from notifications.utils import send_notification_email
+from patients.models import PatientProfile 
+from doctors.models import DoctorProfile 
 
 from .serializers import (
     RegisterSerializer,
@@ -48,13 +50,6 @@ def _get_tokens_for_user(user: User) -> dict:
 #  POST /register/
 # ======================================================================= #
 class RegisterView(generics.CreateAPIView):
-    """
-    Public endpoint — no authentication required.
-    Creates a new Doctor or Patient account.
-    Account starts as unapproved; Admin must approve before login is allowed.
-
-    Owner : Mariam
-    """
 
     queryset           = User.objects.all()
     serializer_class   = RegisterSerializer
@@ -64,6 +59,12 @@ class RegisterView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
+
+        if user.role == "PATIENT":
+            PatientProfile.objects.get_or_create(user=user)
+
+        if user.role == "DOCTOR":
+            DoctorProfile.objects.get_or_create(user=user)
 
         return Response(
             {

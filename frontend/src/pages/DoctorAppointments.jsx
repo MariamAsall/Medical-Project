@@ -1,89 +1,83 @@
 import { useEffect, useState } from "react";
 import api from "../api/axios";
-import { notifySuccess, notifyError } from "../utils/notify";
+import { notifyError, notifySuccess } from "../utils/notify";
+import { useSelector } from "react-redux";
 
 function DoctorAppointments() {
 
+    const { user } = useSelector((state) => state.auth);
+
     const [appointments, setAppointments] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [loadingId, setLoadingId] = useState(null);
 
-    // =========================
-    // GET APPOINTMENTS
-    // =========================
     const fetchAppointments = async () => {
-        try {
-            const res = await api.get("appointments/");
 
-            console.log("APPOINTMENTS:", res.data);
+        try {
+
+            const res = await api.get("appointments/");
 
             const data = Array.isArray(res.data)
                 ? res.data
                 : res.data.results || res.data.appointments || [];
 
-            setAppointments(data);
+            const validAppointments = data.filter(
+                (app) => app.doctor
+            );
+
+            const doctorAppointments = validAppointments.filter(
+                (app) => app.doctor?.user_data?.id === user?.id
+            );
+
+            setAppointments(doctorAppointments);
 
         } catch (err) {
+
             console.log(err.response?.data || err);
             notifyError("Failed to load appointments");
 
         } finally {
+
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchAppointments();
-    }, []);
 
-    // =========================
-    // ACCEPT APPOINTMENT
-    // =========================
-    const handleAccept = async (id) => {
-        try {
-            setLoadingId(id);
-
-            await api.patch(`appointments/${id}/`, {
-                status: "approved"
-            });
-
-            notifySuccess("Appointment approved");
+        if (user) {
             fetchAppointments();
-
-        } catch (err) {
-            notifyError("Failed to approve");
-
-        } finally {
-            setLoadingId(null);
         }
-    };
 
-    // =========================
-    // REJECT APPOINTMENT
-    // =========================
-    const handleReject = async (id) => {
+    }, [user]);
+
+    const updateStatus = async (id, status) => {
+
         try {
-            setLoadingId(id);
 
             await api.patch(`appointments/${id}/`, {
-                status: "cancelled"
+                status,
             });
 
-            notifySuccess("Appointment rejected");
-            fetchAppointments();
+            notifySuccess("Appointment updated");
+
+            setAppointments((prev) =>
+                prev.map((app) =>
+                    app.id === id
+                        ? { ...app, status }
+                        : app
+                )
+            );
 
         } catch (err) {
-            notifyError("Failed to reject");
 
-        } finally {
-            setLoadingId(null);
+            console.log(err.response?.data || err);
+            notifyError("Failed to update");
         }
     };
 
     if (loading) {
         return (
             <div className="text-center mt-5">
-                <h4>Loading appointments...</h4>
+                <h3>Loading appointments...</h3>
             </div>
         );
     }
@@ -91,58 +85,77 @@ function DoctorAppointments() {
     return (
         <div className="container mt-4">
 
-            <h2 className="mb-4">Doctor Appointments</h2>
+            <div className="d-flex justify-content-between align-items-center mb-4">
+
+                <h2>Doctor Appointments</h2>
+
+                <span className="badge bg-primary">
+                    {appointments.length} Appointments
+                </span>
+
+            </div>
 
             <div className="row g-3">
 
                 {appointments.length === 0 ? (
-                    <p className="text-center">No appointments found</p>
+
+                    <h5>No appointments found</h5>
+
                 ) : (
+
                     appointments.map((app) => (
+
                         <div className="col-md-4" key={app.id}>
 
-                            <div className="card shadow-sm border-0 p-3">
+                            <div className="card shadow border-0 p-3">
 
-                                {/* PATIENT NAME */}
                                 <h5>
-                                    Patient: {app.patient?.user_data?.first_name || "Unknown"}
+                                    Patient:
+                                    {" "}
+                                    {app.patient?.user_data?.first_name || "Unknown"}
                                 </h5>
 
-                                {/* DATE */}
-                                <p>
-                                    📅 {app.date || "Not set"}
+                                <p className="mb-1">
+                                    📅 {app.date || "No Date"}
                                 </p>
 
-                                {/* STATUS */}
-                                <p>
-                                    Status:{" "}
-                                    <span className={
-                                        app.status === "approved"
-                                            ? "text-success"
-                                            : app.status === "cancelled"
-                                                ? "text-danger"
-                                                : "text-warning"
-                                    }>
-                                        {app.status || "pending"}
+                                <p className="mb-3">
+                                    Status:
+                                    {" "}
+                                    <span
+                                        className={
+                                            app.status === "approved"
+                                                ? "text-success"
+                                                : app.status === "cancelled"
+                                                    ? "text-danger"
+                                                    : "text-warning"
+                                        }
+                                    >
+                                        {app.status}
                                     </span>
                                 </p>
 
-                                {/* ACTIONS */}
-                                <button
-                                    className="btn btn-success btn-sm me-2"
-                                    disabled={loadingId === app.id}
-                                    onClick={() => handleAccept(app.id)}
-                                >
-                                    Accept
-                                </button>
+                                <div className="d-flex gap-2">
 
-                                <button
-                                    className="btn btn-danger btn-sm"
-                                    disabled={loadingId === app.id}
-                                    onClick={() => handleReject(app.id)}
-                                >
-                                    Reject
-                                </button>
+                                    <button
+                                        className="btn btn-success btn-sm"
+                                        onClick={() =>
+                                            updateStatus(app.id, "approved")
+                                        }
+                                    >
+                                        Accept
+                                    </button>
+
+                                    <button
+                                        className="btn btn-danger btn-sm"
+                                        onClick={() =>
+                                            updateStatus(app.id, "cancelled")
+                                        }
+                                    >
+                                        Reject
+                                    </button>
+
+                                </div>
 
                             </div>
 

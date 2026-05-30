@@ -10,6 +10,7 @@ from .serializers import PatientProfileSerializer
 from .permissions import IsPatient
 
 
+
 # ── Profile ────────────────────────────────────────────────────────────────
 
 class PatientProfileView(generics.RetrieveUpdateAPIView):

@@ -17,12 +17,14 @@ function DoctorLayout() {
     return (
         <div className="d-flex">
 
-            {/* Sidebar */}
             <div
                 className="bg-dark text-white p-3"
                 style={{ width: "250px", minHeight: "100vh" }}
             >
-                <h4 className="mb-4">Doctor Panel</h4>
+
+                <h4 className="mb-4">
+                    Doctor Panel
+                </h4>
 
                 <ul className="list-unstyled">
 
@@ -54,16 +56,19 @@ function DoctorLayout() {
                     </li>
 
                 </ul>
+
             </div>
 
-            {/* Main Content */}
             <div className="flex-grow-1">
 
-                {/* Navbar */}
                 <div className="bg-light p-3 border-bottom d-flex justify-content-between align-items-center">
 
-                    <h5>
-                        Welcome Dr. {user?.first_name || "Doctor"}
+                    <h5 className="mb-0">
+                        Welcome,
+                        {" "}
+                        <span className="text-primary">
+                            Dr. {user?.first_name}
+                        </span>
                     </h5>
 
                     <div className="d-flex align-items-center gap-3">
@@ -83,7 +88,6 @@ function DoctorLayout() {
 
                 </div>
 
-                {/* Page Content */}
                 <div className="p-4">
                     <Outlet />
                 </div>
