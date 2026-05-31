@@ -18,7 +18,7 @@ function PatientDashboard() {
     const fetchData = async () => {
         try {
             const doctorsRes = await api.get("doctors/profiles/all/");
-            const appointmentsRes = await api.get("appointments/");
+            const appointmentsRes = await api.get("appointments/manage/");
 
             console.log("DOCTORS:", doctorsRes.data);
             console.log("APPOINTMENTS:", appointmentsRes.data);
@@ -60,7 +60,7 @@ function PatientDashboard() {
         e.preventDefault();
 
         try {
-            await api.post("appointments/", form);
+            await api.post("appointments/book/", form);
 
             setForm({
                 doctor: "",

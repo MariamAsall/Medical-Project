@@ -11,7 +11,7 @@ function DoctorDashboard() {
 
     const fetchDoctor = async () => {
         try {
-            const res = await api.get("doctors/all/");
+            const res = await api.get("doctors/profiles/");
 
             const doctors = Array.isArray(res.data)
                 ? res.data

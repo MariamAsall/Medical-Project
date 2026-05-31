@@ -1,11 +1,10 @@
 import { useState } from "react";
 import api from "../api/axios";
 import { useDispatch } from "react-redux";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { loginSuccess } from "./authslice.jsx";
 import { Link } from "react-router-dom";
 import { notifySuccess, notifyError } from "../utils/notify";
-
 
 function Login() {
     const [formData, setFormData] = useState({
@@ -27,10 +26,7 @@ function Login() {
         e.preventDefault();
 
         try {
-            const response = await api.post(
-                "auth/login/",
-                formData
-            );
+            const response = await api.post("auth/login/", formData);
 
             localStorage.setItem(
                 "access_token",
@@ -48,12 +44,24 @@ function Login() {
 
             dispatch(
                 loginSuccess({
-                    isAuthenticated: true,
-                    role: response.data.user.role.toLowerCase(),
+                    user: response.data.user,
+                    role: role,
                 })
             );
 
-            navigate("/");
+            //  SUCCESS NOTIFICATION
+            notifySuccess("Login successful ");
+
+            console.log(role);
+
+            if (role === "admin") {
+                navigate("/admin");
+            } else if (role === "doctor") {
+                navigate("/doctor");
+            } else {
+                navigate("/patient");
+            }
+
         } catch (error) {
             console.log(error.response?.data);
 
@@ -68,66 +76,51 @@ function Login() {
     return (
         <div className="container d-flex justify-content-center align-items-center vh-100">
 
-            <div
-                className="card shadow p-4"
-                style={{ width: "400px" }}
-            >
-                <h3 className="text-center mb-4">
-                    Login
-                </h3>
+            <div className="card shadow p-4" style={{ width: "400px" }}>
+
+                <h3 className="text-center mb-4">Login</h3>
 
                 <form onSubmit={handleSubmit}>
 
                     <div className="mb-3">
-                        <label className="form-label">
-                            Email
-                        </label>
-
+                        <label className="form-label">Email</label>
                         <input
                             type="email"
                             name="email"
                             className="form-control"
                             onChange={handleChange}
-                            required
                         />
                     </div>
 
                     <div className="mb-3">
-                        <label className="form-label">
-                            Password
-                        </label>
-
+                        <label className="form-label">Password</label>
                         <input
                             type="password"
                             name="password"
                             className="form-control"
                             onChange={handleChange}
-                            required
                         />
                     </div>
 
-                    <button
-                        type="submit"
-                        className="btn btn-primary w-100"
-                    >
+                    <button className="btn btn-primary w-100">
                         Login
                     </button>
 
                     <div className="text-center mt-3">
 
-    <p className="mb-1">
-        Don't have an account?
-    </p>
+                        <p className="mb-1">
+                            Don't have an account?
+                        </p>
 
-    <Link to="/register" className="btn btn-link">
-        Create account
-    </Link>
+                        <Link to="/register" className="btn btn-link">
+                            Create account
+                        </Link>
 
-</div>
+                    </div>
 
                 </form>
-            </div>
 
+            </div>
         </div>
     );
 }
