@@ -8,7 +8,7 @@ from django.db import transaction
 from .models import PatientProfile
 from .serializers import PatientProfileSerializer
 from .permissions import IsPatient
-
+from .permissions import IsPatient, IsAdmin
 
 # ── Profile ────────────────────────────────────────────────────────────────
 
@@ -19,7 +19,7 @@ class PatientProfileView(generics.RetrieveUpdateAPIView):
     PATCH /api/patients/profile/  → partial edit
     """
     serializer_class = PatientProfileSerializer
-    permission_classes = [IsAuthenticated, IsPatient]
+    permission_classes = [IsAuthenticated, IsPatient,IsAdmin]
 
     def get_object(self):
         return self.request.user.patient_profile
@@ -33,22 +33,28 @@ class PatientAppointmentListView(APIView):
     Returns all appointments for the logged-in patient.
     Supports ?status=pending|confirmed|completed|cancelled
     """
-    permission_classes = [IsAuthenticated, IsPatient]
+    permission_classes = [IsAuthenticated, IsPatient,IsAdmin]
 
     def get(self, request):
         try:
-            from appointments.models import Appointment  # Sami's model
+            from appointments.models import Appointment
         except ImportError:
             return Response(
                 {"detail": "Appointments module not ready yet."},
                 status=status.HTTP_503_SERVICE_UNAVAILABLE
-            )
+        )
 
-        appointments = Appointment.objects.filter(
-            patient=request.user.patient_profile
-        ).select_related(
-            'doctor__user', 'doctor__specialty'
-        ).order_by('-date', '-time')
+        # If admin → return all, if patient → return only theirs
+        if request.user.is_staff:
+            appointments = Appointment.objects.all().select_related(
+                'doctor__user', 'doctor__specialty'
+            ).order_by('-date', '-time')
+        else:
+            appointments = Appointment.objects.filter(
+                patient=request.user.patient_profile
+            ).select_related(
+                'doctor__user', 'doctor__specialty'
+            ).order_by('-date', '-time')
 
         # Optional filter by status
         status_filter = request.query_params.get('status')
@@ -75,7 +81,7 @@ class CancelAppointmentView(APIView):
     DELETE /api/patients/appointments/<id>/cancel/
     Patient can only cancel their own PENDING appointments.
     """
-    permission_classes = [IsAuthenticated, IsPatient]
+    permission_classes = [IsAuthenticated, IsPatient,IsAdmin]
 
     def delete(self, request, pk):
         try:
@@ -109,7 +115,7 @@ class RescheduleAppointmentView(APIView):
     Atomically cancels old slot and books a new one.
     Requires: { "new_date": "YYYY-MM-DD", "new_time": "HH:MM" }
     """
-    permission_classes = [IsAuthenticated, IsPatient]
+    permission_classes = [IsAuthenticated, IsPatient,IsAdmin]
 
     def patch(self, request, pk):
         try:
