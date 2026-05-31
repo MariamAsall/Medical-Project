@@ -13,7 +13,7 @@ function DoctorAppointments() {
     // =========================
     const fetchAppointments = async () => {
         try {
-            const res = await api.get("appointments/");
+            const res = await api.get("appointments/manage/");
 
             console.log("APPOINTMENTS:", res.data);
 
@@ -43,15 +43,15 @@ function DoctorAppointments() {
         try {
             setLoadingId(id);
 
-            await api.patch(`appointments/${id}/`, {
-                status: "approved"
+            await api.patch(`appointments/manage/${id}/`, {
+                status: "confirmed"
             });
 
-            notifySuccess("Appointment approved");
+            notifySuccess("Appointment confirmed");
             fetchAppointments();
 
         } catch (err) {
-            notifyError("Failed to approve");
+            notifyError("Failed to confirmed");
 
         } finally {
             setLoadingId(null);
@@ -65,7 +65,7 @@ function DoctorAppointments() {
         try {
             setLoadingId(id);
 
-            await api.patch(`appointments/${id}/`, {
+            await api.patch(`appointments/manage/${id}/`, {
                 status: "cancelled"
             });
 
@@ -104,20 +104,20 @@ function DoctorAppointments() {
                             <div className="card shadow-sm border-0 p-3">
 
                                 {/* PATIENT NAME */}
-                                <h5>
-                                    Patient: {app.patient?.user_data?.first_name || "Unknown"}
-                                </h5>
+                              <h5>
+    Patient: {app.patient_name}
+</h5>
 
                                 {/* DATE */}
-                                <p>
-                                    📅 {app.date || "Not set"}
-                                </p>
+                              <p>
+    📅 {new Date(app.date_time).toLocaleString()}
+</p>
 
                                 {/* STATUS */}
                                 <p>
                                     Status:{" "}
                                     <span className={
-                                        app.status === "approved"
+                                        app.status === "confirmed"
                                             ? "text-success"
                                             : app.status === "cancelled"
                                                 ? "text-danger"

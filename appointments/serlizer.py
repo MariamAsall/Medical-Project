@@ -109,6 +109,16 @@ class AppointmentCreateSerializer(serializers.ModelSerializer):
 
 class AppointmentSerializer(serializers.ModelSerializer):
 
+    doctor_name = serializers.CharField(
+        source="doctor.user.username",
+        read_only=True
+    )
+
+    patient_name = serializers.CharField(
+        source="patient.user.username",
+        read_only=True
+    )
+
     class Meta:
         model = Appointments
         fields = "__all__"

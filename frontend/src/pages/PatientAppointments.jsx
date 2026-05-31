@@ -12,7 +12,7 @@ function PatientAppointments() {
     // =========================
     const fetchAppointments = async () => {
         try {
-            const res = await api.get("appointments/");
+            const res = await api.get("appointments/manage/");
 
             console.log("APPOINTMENTS:", res.data);
 
