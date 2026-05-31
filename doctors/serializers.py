@@ -8,6 +8,13 @@ class SpecialtySerializer(serializers.ModelSerializer):
         model  = Specialty
         fields = '__all__'
 
+    def validate_name(self, value):
+        if Specialty.objects.filter(name__iexact=value).exists():
+            raise serializers.ValidationError(
+                "This specialty already exists."
+            )
+        return value
+
 
 class DoctorProfileSerializer(serializers.ModelSerializer):
     user_data = serializers.SerializerMethodField()

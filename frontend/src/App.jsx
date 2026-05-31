@@ -31,6 +31,7 @@ import PatientLayout from './layouts/PatientLayout';
 //Notification
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import DoctorProfile from './pages/DoctorProfile';
 
 
 function App() {
@@ -64,6 +65,7 @@ function App() {
             }
           >
             <Route index element={<DoctorDashboard />} />
+            <Route path="profile" element={<DoctorProfile />} />
             <Route path="appointments" element={<DoctorAppointments />} />
           </Route>
 
