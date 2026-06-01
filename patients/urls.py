@@ -6,4 +6,5 @@ urlpatterns = [
     path('appointments/',                         views.PatientAppointmentListView.as_view()),
     path('appointments/<int:pk>/cancel/',         views.CancelAppointmentView.as_view()),
     path('appointments/<int:pk>/reschedule/',     views.RescheduleAppointmentView.as_view()),
+    path('list/',                             views.PatientListView.as_view()), 
 ]
