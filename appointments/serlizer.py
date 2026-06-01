@@ -58,6 +58,9 @@ class AppointmentCreateSerializer(serializers.ModelSerializer):
 
         date_time = data.get("date_time")
 
+        if not doctor or not date_time:
+            return data
+
         request = self.context.get("request")
 
         patient_profile = request.user.patient_profile

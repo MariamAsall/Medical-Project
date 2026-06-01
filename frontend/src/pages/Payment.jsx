@@ -12,12 +12,38 @@ function formatTime(t) {
   return `${h12}:${m} ${ampm}`;
 }
 
+// Given a weekday name (e.g. "Monday") and a time string (e.g. "13:00:00"),
+// compute the next occurrence of that weekday as a full ISO datetime string.
+function buildDateTime(dayName, timeStr) {
+  const DAYS = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+  const targetDay = DAYS.indexOf(dayName); // 0=Sun … 6=Sat
+  if (targetDay === -1 || !timeStr) return null;
+
+  const now = new Date();
+  const todayDay = now.getDay(); // 0=Sun … 6=Sat
+  let daysAhead = targetDay - todayDay;
+  if (daysAhead <= 0) daysAhead += 7; // always pick a future date
+
+  const date = new Date(now);
+  date.setDate(now.getDate() + daysAhead);
+
+  const [h, m, s] = timeStr.split(":");
+  date.setHours(parseInt(h, 10), parseInt(m, 10), parseInt(s ?? "0", 10), 0);
+
+  // Return as "YYYY-MM-DDTHH:MM:SS" (Django DateTimeField format)
+  const pad = (n) => String(n).padStart(2, "0");
+  return (
+    `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}` +
+    `T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`
+  );
+}
+
 function Payment() {
   const navigate = useNavigate();
   const location = useLocation();
   const booking = location.state || {};
 
-  const { doctorId, doctorName, slotId, day, start_time, end_time } = booking;
+  const { doctorId, doctorName, day, start_time, end_time } = booking;
 
   const [form, setForm] = useState({
     reason: "",
@@ -29,20 +55,20 @@ function Payment() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  if (!doctorId || !slotId) {
+  if (!doctorId || !day || !start_time) {
     return (
       <div className="pt-center-state">
         <span style={{ fontSize: 36 }}>🚫</span>
         <p style={{ color: "var(--pt-slate)", fontFamily: "var(--pt-font)" }}>
-          No booking data found.{" "}
-          <button
-            className="pt-btn pt-btn-primary"
-            style={{ width: "auto", marginTop: 12 }}
-            onClick={() => navigate("/patient/dashboard")}
-          >
-            Go back to Doctors
-          </button>
+          No booking data found.
         </p>
+        <button
+          className="pt-btn pt-btn-primary"
+          style={{ width: "auto" }}
+          onClick={() => navigate("/patient/dashboard")}
+        >
+          Go back to Doctors
+        </button>
       </div>
     );
   }
@@ -67,12 +93,20 @@ function Payment() {
       setError("Please enter a reason for your visit.");
       return;
     }
+
+    // Build the date_time the backend expects from the slot's weekday + start time
+    const date_time = buildDateTime(day, start_time);
+    if (!date_time) {
+      setError("Could not determine appointment time. Please go back and select a slot again.");
+      return;
+    }
+
     setLoading(true);
     setError(null);
     try {
       await api.post("appointments/book/", {
         doctor: doctorId,
-        availability: slotId,
+        date_time,           // ← what the model actually requires
         reason: form.reason,
         status: "pending",
       });
@@ -82,7 +116,8 @@ function Payment() {
       const msg =
         typeof data === "string"
           ? data
-          : Object.values(data || {}).flat().join(" ") || "Booking failed. Please try again.";
+          : Object.values(data || {}).flat().join(" ") ||
+            "Booking failed. Please try again.";
       setError(msg);
     } finally {
       setLoading(false);
