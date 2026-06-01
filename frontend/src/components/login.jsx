@@ -52,7 +52,6 @@ function Login() {
             //  SUCCESS NOTIFICATION
             notifySuccess("Login successful ");
 
-            console.log(role);
 
             if (role === "admin") {
                 navigate("/admin");
@@ -63,15 +62,25 @@ function Login() {
             }
 
         } catch (error) {
-            console.log(error.response?.data);
+            const data = error.response?.data;
 
-            //  ERROR NOTIFICATION
-            notifyError(
-                error.response?.data?.detail ||
-                "Login failed "
-            );
-        }
-    };
+    const message =
+        data?.non_field_errors?.[0] ||
+        data?.detail ||
+        "Login failed";
+
+    if (message.includes("pending admin approval")) {
+        notifyError("Your account is waiting for admin approval.");
+    }
+    else if (message.includes("deactivated")) {
+        notifyError("Your account has been blocked.");
+    }
+    else if (message.includes("Invalid email or password")) {
+        notifyError("Invalid email or password.");
+    }
+    else {
+        notifyError(message);
+    }; }  }
 
     return (
         <div className="container d-flex justify-content-center align-items-center vh-100">
