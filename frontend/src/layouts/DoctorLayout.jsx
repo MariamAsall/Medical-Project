@@ -39,7 +39,18 @@ function DoctorLayout() {
                             Dashboard
                         </NavLink>
                     </li>
-
+                    <li className="mb-2">
+                        <NavLink
+                            to="/doctor/availability"
+                            className={({ isActive }) =>
+                                isActive
+                                    ? "text-warning fw-bold text-decoration-none"
+                                    : "text-white text-decoration-none"
+                            }
+                        >
+                            Availability
+                        </NavLink>
+                    </li>
                     <li className="mb-2">
                         <NavLink
                             to="/doctor/appointments"
