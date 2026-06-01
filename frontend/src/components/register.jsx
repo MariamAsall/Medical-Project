@@ -1,6 +1,8 @@
 import { useState } from "react";
 import api from "../api/axios";
 import { useNavigate } from "react-router-dom";
+import { notifySuccess, notifyError } from "../utils/notify";
+
 
 function Register() {
     const navigate = useNavigate();
@@ -27,9 +29,14 @@ function Register() {
 
         try {
             await api.post("auth/register/", formData);
+            notifySuccess("register successfully");
+
             navigate("/login");
+
         } catch (error) {
-            console.log(error.response?.data);
+            
+         notifyError("Passwords do not match.");
+
         }
     };
 
