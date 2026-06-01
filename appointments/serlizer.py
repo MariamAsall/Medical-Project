@@ -1,11 +1,8 @@
 from django.utils import timezone
-
 from rest_framework import serializers
-
 from appointments.models import Appointments
-
 from availability.models import DoctorAvailability
-
+from django.utils.timezone import localtime
 
 class AppointmentCreateSerializer(serializers.ModelSerializer):
 
@@ -63,17 +60,22 @@ class AppointmentCreateSerializer(serializers.ModelSerializer):
 
         request = self.context.get("request")
 
-        patient_profile = request.user.patient_profile
+        patient_profile = getattr(request.user, 'patient_profile', None)
+        if not patient_profile:
+            raise serializers.ValidationError(
+                "Patient profile not found. Please complete your profile first."
+            )
 
-        weekday = date_time.weekday()
+        local_dt = localtime(date_time)
+        weekday = local_dt.weekday()        
+        appointment_time = local_dt.time()  
 
-        appointment_time = date_time.time()
         availability = DoctorAvailability.objects.filter(
             doctor=doctor,
             weekday=weekday,
             start_time__lte=appointment_time,
             end_time__gte=appointment_time,
-            is_available=True,
+            #is_available=True,
         ).first()
 
         # availability = (

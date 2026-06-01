@@ -94,11 +94,8 @@ class AppointmenstViewSet(viewsets.ModelViewSet):
     def perform_update(self, serializer):
 
         appointment = self.get_object()
-
         old_status = appointment.status
-
         updated_appointment = serializer.save()
-
         new_status = updated_appointment.status
 
         # Send email only if status changed
@@ -198,11 +195,12 @@ class BookAppointmentView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         appointment = serializer.save(patient=self.request.user.patient_profile)
-        # Mark the slot as booked
-        from availability.models import DoctorAvailability
-        DoctorAvailability.objects.filter(
-            doctor=appointment.doctor,
-            weekday=appointment.date_time.weekday(),
-            start_time__lte=appointment.date_time.time(),
-            end_time__gte=appointment.date_time.time(),
-        ).update(is_available=False)
+        try:
+            send_appointment_email(
+                "Appointment Booked",
+                f"Your appointment with Dr. {appointment.doctor.user.get_full_name()} "
+                f"has been booked for {appointment.date_time}.",
+                appointment.patient.user.email,
+            )
+        except Exception as e:
+            print("Email Error:", e)

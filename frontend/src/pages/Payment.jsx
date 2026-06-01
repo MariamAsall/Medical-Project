@@ -30,12 +30,8 @@ function buildDateTime(dayName, timeStr) {
   const [h, m, s] = timeStr.split(":");
   date.setHours(parseInt(h, 10), parseInt(m, 10), parseInt(s ?? "0", 10), 0);
 
-  // Return as "YYYY-MM-DDTHH:MM:SS" (Django DateTimeField format)
-  const pad = (n) => String(n).padStart(2, "0");
-  return (
-    `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}` +
-    `T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`
-  );
+  // Return full ISO 8601 string in UTC — universally accepted by Django
+  return date.toISOString();
 }
 
 function Payment() {
@@ -106,7 +102,7 @@ function Payment() {
     try {
       await api.post("appointments/book/", {
         doctor: doctorId,
-        date_time,           // ← what the model actually requires
+        date_time,
         reason: form.reason,
         status: "pending",
       });
