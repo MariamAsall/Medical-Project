@@ -25,6 +25,12 @@ class PatientProfileView(generics.RetrieveUpdateAPIView):
         return self.request.user.patient_profile
 
 
+class PatientListView(generics.ListAPIView):
+    serializer_class = PatientProfileSerializer
+    permission_classes = [IsAdmin]
+
+    queryset = PatientProfile.objects.all()
+
 # ── Appointments ───────────────────────────────────────────────────────────
 
 class PatientAppointmentListView(APIView):
