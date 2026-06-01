@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../api/axios";
+import { notifyError } from "../utils/notify";
 
 const DAYS = [
     { value: "0", label: "Monday" },
@@ -16,7 +17,6 @@ function DoctorAvailability() {
     const [slots, setSlots] = useState([]);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
-    const [error, setError] = useState(null);
 
     const [form, setForm] = useState({
         weekday: 0,
@@ -30,7 +30,7 @@ function DoctorAvailability() {
             const res = await api.get("availability/");
             setSlots(res.data.results || res.data);
         } catch (err) {
-            console.log(err);
+            notifyError("Failed to load availability slots.");
         } finally {
             setLoading(false);
         }
@@ -48,7 +48,6 @@ function DoctorAvailability() {
     const handleAdd = async (e) => {
         e.preventDefault();
         setSaving(true);
-        setError(null);
 
         try {
             await api.post("availability/", form);
@@ -62,12 +61,10 @@ function DoctorAvailability() {
         } catch (err) {
             const data = err.response?.data;
             if (data) {
-                const messages = Object.entries(data)
-                    .map(([field, msgs]) => `${field}: ${msgs}`)
-                    .join(" | ");
-                setError(messages);
+                notifyError("End time must be after start time.");
+                
             } else {
-                setError("Something went wrong.");
+                notifyError("Something went wrong.");
             }
         } finally {
             setSaving(false);
@@ -79,7 +76,7 @@ function DoctorAvailability() {
             await api.delete(`availability/${id}/`);
             setSlots(slots.filter((slot) => slot.id !== id));
         } catch (err) {
-            console.log(err);
+            notifyError("Failed to delete slot.");
         }
     };
 
@@ -88,12 +85,6 @@ function DoctorAvailability() {
     return (
         <div>
             <h2>My Availability</h2>
-
-            {error && (
-                <div className="alert alert-danger">
-                    {error}
-                </div>
-            )}
 
             <form onSubmit={handleAdd} className="my-4">
                 <h5>Add New Slot</h5>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import {useNavigate} from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import api from "../api/axios";
 import { notifySuccess, notifyError } from "../utils/notify";
 
@@ -10,7 +10,6 @@ function DoctorProfile() {
     const [specialties, setSpecialties] = useState([]);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
-    const [error, setError] = useState(null);
 
     const [form, setForm] = useState({
         bio: "",
@@ -21,7 +20,7 @@ function DoctorProfile() {
     });
 
     const navigate = useNavigate();
-    
+
 
     const fetchProfile = async () => {
         try {
@@ -39,7 +38,7 @@ function DoctorProfile() {
                 });
             }
         } catch (err) {
-            setError("Failed to load profile.");
+            notifyError("Failed to load profile.");
         }
     };
 
@@ -48,7 +47,7 @@ function DoctorProfile() {
             const res = await api.get("doctors/specialties/");
             setSpecialties(res.data.results || res.data);
         } catch (err) {
-            console.log(err);
+            notifyError("Failed to load specialties.");
         }
     };
 
@@ -70,22 +69,31 @@ function DoctorProfile() {
         if (!profile) return;
 
         setSaving(true);
-        setError(null);
 
         try {
             await api.patch(`doctors/profiles/${profile.id}/`, form);
-            fetchProfile(); 
+            fetchProfile();
             notifySuccess("Profile updated successfully")
             navigate('/doctor')
         } catch (err) {
             const data = err.response?.data;
+
             if (data) {
-                const messages = Object.entries(data)
-                    .map(([field, msgs]) => `${field}: ${msgs}`)
-                    .join(" | ");
-                setError(messages);
+                const field = Object.keys(data)[0];
+                const message = data[field];
+
+                if (field === "experience_years") {
+                    notifyError("Experience years must be a positive number.");
+                }
+                else if (field === "consultation_fees") {
+                    notifyError("Consultation fees must be a positive number.");
+                }
+                else {
+                    notifyError(Array.isArray(message) ? message[0] : message);
+                }
+
             } else {
-                setError("Something went wrong.");
+                notifyError("Something went wrong.");
             }
         } finally {
             setSaving(false);
@@ -98,12 +106,6 @@ function DoctorProfile() {
     return (
         <div>
             <h2>My Profile</h2>
-
-            {error && (
-                <div className="alert alert-danger">
-                    {error}
-                </div>
-            )}
 
             <form onSubmit={handleSubmit}>
 
