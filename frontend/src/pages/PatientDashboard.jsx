@@ -1,194 +1,110 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
+import "./patient.css";
 
 function PatientDashboard() {
-    const [doctors, setDoctors] = useState([]);
-    const [appointments, setAppointments] = useState([]);
-    const [loading, setLoading] = useState(true);
+  const [doctors, setDoctors] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
-    const [form, setForm] = useState({
-        doctor: "",
-        date_time: "",
-        reason: "",
-    });
-
-    // =========================
-    // FETCH DATA
-    // =========================
-    const fetchData = async () => {
-        try {
-            const doctorsRes = await api.get("doctors/profiles/all/");
-            const appointmentsRes = await api.get("appointments/manage/");
-
-            console.log("DOCTORS:", doctorsRes.data);
-            console.log("APPOINTMENTS:", appointmentsRes.data);
-
-            setDoctors(Array.isArray(doctorsRes.data) ? doctorsRes.data : []);
-
-            const data =
-                appointmentsRes.data?.results ||
-                appointmentsRes.data ||
-                [];
-
-            setAppointments(Array.isArray(data) ? data : []);
-
-        } catch (err) {
-            console.log("ERROR:", err.response?.data || err);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchData();
-    }, []);
-
-    // =========================
-    // FORM CHANGE
-    // =========================
-    const handleChange = (e) => {
-        setForm({
-            ...form,
-            [e.target.name]: e.target.value,
-        });
-    };
-
-    // =========================
-    // BOOK APPOINTMENT
-    // =========================
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        try {
-            await api.post("appointments/book/", form);
-
-            setForm({
-                doctor: "",
-                date_time: "",
-                reason: "",
-            });
-
-            fetchData();
-
-        } catch (err) {
-            console.log("BOOK ERROR:", err.response?.data || err);
-        }
-    };
-
-    if (loading) {
-        return <h3 className="text-center mt-5">Loading...</h3>;
+  const fetchDoctors = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await api.get("doctors/profiles/all/");
+      setDoctors(Array.isArray(res.data) ? res.data : []);
+    } catch (err) {
+      setError("Failed to load doctors. Please try again.");
+    } finally {
+      setLoading(false);
     }
+  };
 
+  useEffect(() => {
+    fetchDoctors();
+  }, []);
+
+  const getInitials = (doc) => {
+    const first = doc.user_data?.first_name?.[0] || "";
+    const last = doc.user_data?.last_name?.[0] || "";
+    return (first + last).toUpperCase() || "Dr";
+  };
+
+  const getDoctorName = (doc) => {
+    const first = doc.user_data?.first_name || "";
+    const last = doc.user_data?.last_name || "";
+    return `Dr. ${first} ${last}`.trim();
+  };
+
+  if (loading) {
     return (
-        <div className="container mt-4">
-
-            <h2>Patient Dashboard</h2>
-
-            {/* ========================= */}
-            {/* BOOK APPOINTMENT */}
-            {/* ========================= */}
-            <div className="card p-3 mb-4">
-
-                <h5>Book Appointment</h5>
-
-                <form onSubmit={handleSubmit}>
-
-                    <select
-                        name="doctor"
-                        className="form-control mb-2"
-                        value={form.doctor}
-                        onChange={handleChange}
-                    >
-                        <option value="">Select Doctor</option>
-
-                        {doctors.length === 0 ? (
-                            <option disabled>No doctors found</option>
-                        ) : (
-                            doctors.map((doc) => (
-                                <option key={doc.id} value={doc.id}>
-                                    {doc.user_data
-                                        ? `Dr. ${doc.user_data.first_name} ${doc.user_data.last_name}`
-                                        : `Doctor ${doc.id}`}
-                                </option>
-                            ))
-                        )}
-                    </select>
-
-                    <input
-                        type="datetime-local"
-                        name="date_time"
-                        className="form-control mb-2"
-                        value={form.date_time}
-                        onChange={handleChange}
-                    />
-
-                    <input
-                        type="text"
-                        name="reason"
-                        className="form-control mb-2"
-                        placeholder="Reason"
-                        value={form.reason}
-                        onChange={handleChange}
-                    />
-
-                    <button className="btn btn-primary w-100">
-                        Book Appointment
-                    </button>
-
-                </form>
-            </div>
-
-            {/* ========================= */}
-            {/* APPOINTMENTS */}
-            {/* ========================= */}
-            <h5>My Appointments</h5>
-
-            <table className="table table-bordered mt-3">
-
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Doctor</th>
-                        <th>Date</th>
-                        <th>Reason</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    {appointments.map((app) => (
-                        <tr key={app.id}>
-                            <td>{app.id}</td>
-
-                            <td>
-                                {typeof app.doctor === "object"
-                                    ? `${app.doctor?.first_name || ""} ${app.doctor?.last_name || ""}`
-                                    : app.doctor}
-                            </td>
-
-                            <td>{app.date_time}</td>
-                            <td>{app.reason}</td>
-
-                            <td>
-                                <span className={`badge ${
-                                    app.status === "pending"
-                                        ? "bg-warning"
-                                        : app.status === "approved"
-                                        ? "bg-success"
-                                        : "bg-danger"
-                                }`}>
-                                    {app.status}
-                                </span>
-                            </td>
-
-                        </tr>
-                    ))}
-                </tbody>
-
-            </table>
-
-        </div>
+      <div className="pt-center-state">
+        <div className="pt-spinner" />
+        <p className="pt-spinner-text">Loading doctors…</p>
+      </div>
     );
+  }
+
+  return (
+    <div className="pt-page">
+      <div className="pt-page-header">
+        <h1 className="pt-page-title">Find a Doctor</h1>
+        <p className="pt-page-subtitle">Browse available doctors and book your appointment</p>
+      </div>
+
+      {error && (
+        <div className="pt-error-box">
+          <span>⚠️</span> {error}
+        </div>
+      )}
+
+      <div className="pt-grid">
+        {doctors.length === 0 ? (
+          <div className="pt-empty">
+            <span className="pt-empty-icon">🩺</span>
+            No doctors available at the moment.
+          </div>
+        ) : (
+          doctors.map((doc) => (
+            <div
+              key={doc.id}
+              className="pt-card pt-card-clickable"
+              onClick={() => navigate(`/patient/doctors/${doc.id}/slots`)}
+            >
+              <div className="pt-card-avatar">{getInitials(doc)}</div>
+              <div className="pt-card-title">{getDoctorName(doc)}</div>
+              <div className="pt-card-sub">
+                {doc.specialty?.name || "General Practitioner"}
+              </div>
+              <div className="pt-card-meta">
+                <div className="pt-card-meta-row">
+                  <span className="pt-card-meta-icon">🎓</span>
+                  {doc.experience_years ?? 0} years experience
+                </div>
+                {doc.consultation_fees && (
+                  <div className="pt-card-meta-row">
+                    <span className="pt-card-meta-icon">💳</span>
+                    ${parseFloat(doc.consultation_fees).toFixed(2)} consultation
+                  </div>
+                )}
+              </div>
+              <button
+                className="pt-btn pt-btn-primary"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate(`/patient/doctors/${doc.id}/slots`);
+                }}
+              >
+                Book Now →
+              </button>
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  );
 }
 
 export default PatientDashboard;

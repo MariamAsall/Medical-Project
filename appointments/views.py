@@ -89,14 +89,6 @@ class AppointmenstViewSet(viewsets.ModelViewSet):
         return Appointments.objects.none()
 
     def get_serializer_class(self):
-
-        if self.action in [
-            'update',
-            'partial_update'
-        ]:
-
-            return AppointmentCreateSerializer
-
         return AppointmentSerializer
 
     def perform_update(self, serializer):
@@ -205,5 +197,12 @@ class BookAppointmentView(generics.CreateAPIView):
     serializer_class = AppointmentCreateSerializer
 
     def perform_create(self, serializer):
-
-        serializer.save( patient=self.request.user.patient_profile )
+        appointment = serializer.save(patient=self.request.user.patient_profile)
+        # Mark the slot as booked
+        from availability.models import DoctorAvailability
+        DoctorAvailability.objects.filter(
+            doctor=appointment.doctor,
+            weekday=appointment.date_time.weekday(),
+            start_time__lte=appointment.date_time.time(),
+            end_time__gte=appointment.date_time.time(),
+        ).update(is_available=False)
