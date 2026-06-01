@@ -15,6 +15,7 @@ function AdminDashboard() {
 
     const [appointments, setAppointments] = useState([]);
     const [doctors, setDoctors] = useState([]);
+    const [patients, setPatients] = useState([]);
     const [availability, setAvailability] = useState([]);
     const [specialties, setSpecialties] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -31,13 +32,15 @@ function AdminDashboard() {
                 appointmentsRes,
                 doctorsRes,
                 availabilityRes,
-                specialtiesRes
+                specialtiesRes,
+                 patientsRes
             ] = await Promise.all([
                 api.get("auth/admin/users/"),
                 api.get("appointments/manage/"),
                 api.get("doctors/profiles/all"),
                 api.get("availability/"),
                 api.get("doctors/specialties/"),
+                  api.get("patients/list/"),
             ]);
 
             const users = usersRes.data.users || [];
@@ -54,6 +57,14 @@ function AdminDashboard() {
 
             const specialtiesData =
                 specialtiesRes.data?.results || specialtiesRes.data || [];
+
+            const patientsData =
+                patientsRes.data?.results ||
+                patientsRes.data?.patients ||
+                patientsRes.data ||
+                [];
+
+            setPatients(patientsData);
 
             setAppointments(appointmentsData);
             setDoctors(doctorsData);
@@ -408,6 +419,84 @@ function AdminDashboard() {
                     );
                 })
             )}
+            {/* PATIENTS TABLE */}
+<h4 className="fw-bold mb-3">Patients</h4>
+
+<div className="card border-0 shadow-sm mb-5 rounded-4">
+    <div className="card-body table-responsive">
+
+        <table className="table table-hover align-middle">
+
+            <thead className="table-light">
+                <tr>
+                    <th>ID</th>
+                    <th>Patient</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Blood Type</th>
+                    <th>Date Of Birth</th>
+                    <th>Emergency Contact</th>
+                    <th>Address</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {patients.length === 0 ? (
+                    <tr>
+                        <td
+                            colSpan="8"
+                            className="text-center text-muted py-4"
+                        >
+                            No patients found
+                        </td>
+                    </tr>
+                ) : (
+                    patients.map((patient) => (
+                        <tr key={patient.id}>
+
+                            <td className="fw-semibold">
+                                #{patient.id}
+                            </td>
+
+                            <td>
+                                <div className="fw-semibold">
+                                    {patient.full_name}
+                                </div>
+                            </td>
+
+                            <td>{patient.email}</td>
+
+                            <td>{patient.phone_number}</td>
+
+                            <td>
+                                <span className="badge bg-danger px-3 py-2">
+                                    {patient.blood_type || "-"}
+                                </span>
+                            </td>
+
+                            <td>
+                                {patient.date_of_birth}
+                            </td>
+
+                            <td>
+                                {patient.emergency_contact || "-"}
+                            </td>
+
+                            <td>
+                                {patient.address || "-"}
+                            </td>
+
+                        </tr>
+                    ))
+                )}
+
+            </tbody>
+
+        </table>
+
+    </div>
+</div>
 
          {/* SPECIALTIES TABLE */}
                     <h4 className="fw-bold mb-3">Specialties</h4>
