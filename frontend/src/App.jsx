@@ -15,6 +15,7 @@ import AdminUsers from "./pages/AdminUsers";
 import PatientAppointments from "./pages/PatientAppointments";
 import DoctorAppointments from "./pages/DoctorAppointments";
 import AddSpecialty from "./pages/AddSpecialty";
+import EditSpecialty from "./pages/EditSpecialty";
 
 import DoctorLayout from "./layouts/DoctorLayout";
 import AdminLayout from "./layouts/AdminLayout";
@@ -53,6 +54,7 @@ function App() {
     <>
       <Routes>
         {/* Public Routes */}
+        <Route path="/" element={<Login />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
@@ -70,6 +72,7 @@ function App() {
           <Route path="users" element={<AdminUsers />} />
           {/* Nested under /admin, this resolves perfectly to /admin/specialties/create */}
           <Route path="specialties/create" element={<AddSpecialty />} />
+          <Route path="specialties/edit/:id" element={<EditSpecialty />} />
         </Route>
 
         {/* Doctor Routes */}

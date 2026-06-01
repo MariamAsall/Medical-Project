@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import api from "../api/axios";
 import { Link } from "react-router-dom";
+import { notifySuccess, notifyError } from "../utils/notify";
+
 
 function AdminDashboard() {
 
@@ -90,6 +92,38 @@ function AdminDashboard() {
         );
     }
 
+    const handleDeleteSpecialty = async (id, name) => {
+    const doctorsCount = doctors.filter(
+        doctor => doctor.specialty === id
+    ).length;
+
+    if (doctorsCount > 0) {
+        notifyError(
+            "Cannot delete specialty because doctors are assigned to it"
+        );
+        return;
+    }
+
+    const confirmDelete = window.confirm(
+        `Are you sure you want to delete "${name}"?`
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+        await api.delete(`doctors/specialties/${id}/`);
+
+        setSpecialties(prev =>
+            prev.filter(spec => spec.id !== id)
+        );
+
+        notifySuccess("Specialty deleted successfully");
+
+    } catch (error) {
+        console.log(error);
+        notifyError("Failed to delete specialty");
+    }
+};
     const cards = [
         { label: "Users", value: stats.users, color: "primary" },
         { label: "Doctors", value: stats.doctors, color: "success" },
@@ -375,49 +409,80 @@ function AdminDashboard() {
                 })
             )}
 
-            {/* SPECIALTIES TABLE */}
-            <h4 className="fw-bold mb-3">Specialties</h4>
+         {/* SPECIALTIES TABLE */}
+                    <h4 className="fw-bold mb-3">Specialties</h4>
 
-            <div className="card border-0 shadow-sm mb-5 rounded-4">
-                <div className="card-body table-responsive">
-                    <table className="table table-hover align-middle">
-                        <thead className="table-light">
-                            <tr>
-                                <th>ID</th>
-                                <th>Specialty Name</th>
-                                <th>Doctors Count</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {specialties.length === 0 ? (
-                                <tr>
-                                    <td colSpan="3" className="text-center text-muted py-3">
-                                        No specialties found
-                                    </td>
-                                </tr>
-                            ) : (
-                                specialties.map(spec => {
-                                    const count = doctors.filter(
-                                        d => d.specialty === spec.id
-                                    ).length;
+                    <div className="card border-0 shadow-sm mb-5 rounded-4">
+                        <div className="card-body table-responsive">
+                            <table className="table table-hover align-middle">
+                                <thead className="table-light">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Specialty Name</th>
+                                        <th>Doctors Count</th>
+                                        <th className="text-center">Actions</th>
+                                    </tr>
+                                </thead>
 
-                                    return (
-                                        <tr key={spec.id}>
-                                            <td className="fw-semibold">{spec.id}</td>
-                                            <td>{spec.name}</td>
-                                            <td>
-                                                <span className="badge bg-primary px-3 py-2">
-                                                    {count}
-                                                </span>
+                                <tbody>
+                                    {specialties.length === 0 ? (
+                                        <tr>
+                                            <td colSpan="4" className="text-center text-muted py-3">
+                                                No specialties found
                                             </td>
                                         </tr>
-                                    );
-                                })
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                                    ) : (
+                                        specialties.map(spec => {
+                                            const count = doctors.filter(
+                                                d => d.specialty === spec.id
+                                            ).length;
+
+                                            return (
+                                                <tr key={spec.id}>
+                                                    <td className="fw-semibold">
+                                                        {spec.id}
+                                                    </td>
+
+                                                    <td>
+                                                        {spec.name}
+                                                    </td>
+
+                                                    <td>
+                                                        <span className="badge bg-primary px-3 py-2">
+                                                            {count}
+                                                        </span>
+                                                    </td>
+                                                    <td className="text-center">
+                                                        <div className="d-flex justify-content-center gap-2">
+
+                                                            <Link
+                                                                to={`/admin/specialties/edit/${spec.id}`}
+                                                                className="btn btn-primary btn-sm"
+                                                            >
+                                                                <i className="bi bi-pencil-square me-1"></i>
+                                                                Edit
+                                                            </Link>
+
+                                                            <button
+                                                                onClick={() =>
+                                                                    handleDeleteSpecialty(spec.id, spec.name)
+                                                                }
+                                                                className="btn btn-danger btn-sm"
+                                                            >
+                                                                <i className="bi bi-trash me-1"></i>
+                                                                Delete
+                                                            </button>
+
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
 
         </div>
     );
