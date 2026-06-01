@@ -2,6 +2,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
+from doctors.models import DoctorProfile
+
 
 User = get_user_model()
 
@@ -106,6 +108,9 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.is_approved = False
         user.is_active   = True
         user.save()
+
+        if user.role == User.Role.DOCTOR:
+            DoctorProfile.objects.create(user=user)
         return user
 
 class LoginSerializer(serializers.Serializer):

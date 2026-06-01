@@ -22,9 +22,64 @@ import PatientLayout from "./layouts/PatientLayout";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import DoctorProfile from './pages/DoctorProfile';
+import DoctorAvailability from './pages/DoctorAvailability';
 
 function App() {
-    const dispatch = useDispatch();
+
+  return (
+    <>
+      <Routes>
+
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/unauthorized" element={<Unauthorized />} />
+
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <AdminLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<AdminDashboard />} />
+          <Route path="users" element={<AdminUsers />} />
+        </Route>
+
+        <Route
+            path="/doctor"
+            element={
+              <ProtectedRoute allowedRoles={["doctor"]}>
+                <DoctorLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<DoctorDashboard />} />
+            <Route path="profile" element={<DoctorProfile />} />
+            <Route path="availability" element={<DoctorAvailability />} />
+            <Route path="appointments" element={<DoctorAppointments />} />
+          </Route>
+
+        <Route
+          path="/patient"
+          element={
+            <ProtectedRoute allowedRoles={["patient"]}>
+              <PatientLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<PatientDashboard />} />
+          <Route path="appointments" element={<PatientAppointments />} />
+        </Route>
+
+      </Routes>
+
+      <ToastContainer position="top-right" autoClose={3000} />
+    </>
+  );
+
+const dispatch = useDispatch();
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
