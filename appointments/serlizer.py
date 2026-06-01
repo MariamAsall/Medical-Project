@@ -67,13 +67,22 @@ class AppointmentCreateSerializer(serializers.ModelSerializer):
 
         weekday = date_time.weekday()
 
-        availability = (
-            DoctorAvailability.objects.filter(
-                doctor=doctor,
-                weekday=weekday,
-                is_available=True
-            ).first()
-        )
+        appointment_time = date_time.time()
+        availability = DoctorAvailability.objects.filter(
+            doctor=doctor,
+            weekday=weekday,
+            start_time__lte=appointment_time,
+            end_time__gte=appointment_time,
+            is_available=True,
+        ).first()
+
+        # availability = (
+        #     DoctorAvailability.objects.filter(
+        #         doctor=doctor,
+        #         weekday=weekday,
+        #         is_available=True
+        #     ).first()
+        # )
 
         if not availability:
 
