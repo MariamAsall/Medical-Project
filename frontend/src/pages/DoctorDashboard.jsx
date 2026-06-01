@@ -24,13 +24,13 @@ function DoctorDashboard() {
             setDoctor(myDoctor);
 
             const specialtiesRes =
-  await api.get("doctors/specialties/");
+                await api.get("doctors/specialties/");
 
-const specialty = specialtiesRes.data.results.find(
-  (s) => s.id === myDoctor.specialty
-);
+            const specialty = specialtiesRes.data.results.find(
+                (s) => s.id === myDoctor.specialty
+            );
 
-setSpecialty(specialty);
+            setSpecialty(specialty);
 
         } catch (err) {
             console.log(err);
@@ -51,11 +51,11 @@ setSpecialty(specialty);
 
             <div className="d-flex justify-content-between align-items-center">
                 <h2>Doctor Profile</h2>
-            <Link to="/doctor/profile"
-                            className="btn btn-danger btn-sm py-2"
-                        >
-                            Edit my profile
-                        </Link>
+                <Link to="/doctor/profile"
+                    className="btn btn-danger btn-sm py-2"
+                >
+                    Edit my profile
+                </Link>
             </div>
 
             <div className="card p-3 shadow mt-3">
@@ -65,7 +65,7 @@ setSpecialty(specialty);
                 </h4>
                 <p>Phone number: {doctor.phone}</p>
 
-                <p>Specialty: {specialty.name}</p>
+                <p>Specialty: {specialty?.name}</p>
 
                 <p>Bio: {doctor.bio}</p>
 

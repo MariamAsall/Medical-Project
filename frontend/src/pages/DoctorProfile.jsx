@@ -35,7 +35,7 @@ function DoctorProfile() {
                     phone: data.phone || "",
                     experience_years: data.experience_years || "",
                     consultation_fees: data.consultation_fees || "",
-                    specialty: data.specialty || "",
+                    specialty: data.specialty?.id || "",
                 });
             }
         } catch (err) {
