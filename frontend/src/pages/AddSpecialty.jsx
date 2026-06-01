@@ -31,7 +31,7 @@ function AddSpecialty() {
 
         } catch (error) {
             console.log(error.response?.data);
-            notifyError("Failed to create specialty");
+            notifyError("This specialty already exists.");
         }
     };
 
