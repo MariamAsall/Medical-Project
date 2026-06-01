@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../api/axios";
 import { useSelector } from "react-redux";
+import { notifySuccess, notifyError } from "../utils/notify";
+
 
 function DoctorDashboard() {
 
@@ -33,6 +35,15 @@ function DoctorDashboard() {
             setSpecialty(specialty);
 
         } catch (err) {
+             if (err.response?.status === 404) {
+            notifyError("Profile not found");
+        }
+        else if (err.response?.status === 403) {
+            notifyError("You are not authorized");
+        }
+        else {
+            notifyError("Something went wrong");
+        }
             console.log(err);
         } finally {
             setLoading(false);
