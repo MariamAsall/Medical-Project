@@ -1,6 +1,7 @@
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../store/authSlice";
+import { FiLogOut, FiUsers, FiGrid } from "react-icons/fi";
 
 function AdminLayout() {
     const navigate = useNavigate();
@@ -14,84 +15,91 @@ function AdminLayout() {
     };
 
     return (
-        <div className="d-flex">
+        <div className="d-flex min-vh-100 bg-light">
 
             {/* Sidebar */}
             <div
-                className="bg-dark text-white p-3"
-                style={{ width: "250px", minHeight: "100vh" }}
+                className="bg-dark text-white p-4 shadow-lg"
+                style={{
+                    width: "270px",
+                    background: "linear-gradient(180deg, #111827, #0b1220)"
+                }}
             >
-                <h4 className="mb-4">Admin Panel</h4>
+
+                <h4 className="fw-bold text-info mb-4">
+                    🏥 MedAdmin
+                </h4>
+
+                <div className="mb-3 text-secondary small">
+                    Logged in as: <b className="text-white">{role}</b>
+                </div>
 
                 <ul className="list-unstyled">
 
-                    <li className="mb-2">
+                    <li className="mb-3">
                         <NavLink
                             to="/admin"
                             end
                             className={({ isActive }) =>
-                                isActive
-                                    ? "text-warning fw-bold text-decoration-none"
-                                    : "text-white text-decoration-none"
+                                `d-flex align-items-center gap-2 p-2 rounded text-decoration-none ${
+                                    isActive
+                                        ? "bg-info text-dark fw-bold"
+                                        : "text-white"
+                                }`
                             }
                         >
+                            <FiGrid />
                             Dashboard
                         </NavLink>
                     </li>
 
-                    <li className="mb-2">
+                    <li className="mb-3">
                         <NavLink
                             to="/admin/users"
                             className={({ isActive }) =>
-                                isActive
-                                    ? "text-warning fw-bold text-decoration-none"
-                                    : "text-white text-decoration-none"
+                                `d-flex align-items-center gap-2 p-2 rounded text-decoration-none ${
+                                    isActive
+                                        ? "bg-info text-dark fw-bold"
+                                        : "text-white"
+                                }`
                             }
                         >
+                            <FiUsers />
                             Users
                         </NavLink>
                     </li>
 
                 </ul>
+
+                <button
+                    onClick={handleLogout}
+                    className="btn btn-outline-info w-100 mt-4 d-flex align-items-center justify-content-center gap-2"
+                >
+                    <FiLogOut /> Logout
+                </button>
             </div>
 
-            {/* Main Content */}
+            {/* Main */}
             <div className="flex-grow-1">
 
-                {/* Navbar */}
-                <div className="bg-light p-3 border-bottom d-flex justify-content-between align-items-center">
+                {/* Top bar */}
+                <div className="bg-white shadow-sm px-4 py-3 d-flex justify-content-between align-items-center">
 
-                    <h5 className="mb-0">
-                        Welcome,{" "}
-                        <span className="text-primary">
-                            {user?.first_name || "Admin"}
-                        </span>
+                    <h5 className="mb-0 fw-semibold">
+                        Welcome, <span className="text-primary">{user?.first_name || "Admin"}</span>
                     </h5>
 
-                    <div className="d-flex align-items-center gap-3">
-
-                        <span className="badge bg-primary">
-                            {role}
-                        </span>
-
-                        <button
-                            className="btn btn-danger btn-sm"
-                            onClick={handleLogout}
-                        >
-                            Logout
-                        </button>
-
-                    </div>
+                    <span className="badge bg-primary px-3 py-2">
+                        {role}
+                    </span>
 
                 </div>
 
-                {/* Page Content */}
                 <div className="p-4">
                     <Outlet />
                 </div>
 
             </div>
-
         </div>
     );
 }

@@ -1,17 +1,11 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-
-import {
-  Routes,
-  Route,
-} from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Routes, Route } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { loginSuccess } from "./components/authslice";
 
 import Login from "./components/login";
 import Register from "./components/register";
 import ProtectedRoute from "./components/ProtectedRoute";
-
 
 import AdminDashboard from "./pages/AdminDashboard";
 import DoctorDashboard from "./pages/DoctorDashboard";
@@ -20,70 +14,91 @@ import Unauthorized from "./pages/Unauthorized";
 import AdminUsers from "./pages/AdminUsers";
 import PatientAppointments from "./pages/PatientAppointments";
 import DoctorAppointments from "./pages/DoctorAppointments";
-
+import AddSpecialty from "./pages/AddSpecialty";
 
 import DoctorLayout from "./layouts/DoctorLayout";
 import AdminLayout from "./layouts/AdminLayout";
-import PatientLayout from './layouts/PatientLayout';
+import PatientLayout from "./layouts/PatientLayout";
 
-
-
-//Notification
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-
 function App() {
+    const dispatch = useDispatch();
+    const [loading, setLoading] = useState(true);
 
-  return (
-    <>
-      <Routes>
+    useEffect(() => {
+        const token = localStorage.getItem("access_token");
+        const role = localStorage.getItem("role");
 
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/unauthorized" element={<Unauthorized />} />
+        if (token && role) {
+            dispatch(loginSuccess({
+                user: null,
+                role: role,
+            }));
+        }
 
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute allowedRoles={["admin"]}>
-              <AdminLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<AdminDashboard />} />
-          <Route path="users" element={<AdminUsers />} />
-        </Route>
+        setLoading(false);
+    }, [dispatch]);
 
-        <Route
-            path="/doctor"
-            element={
-              <ProtectedRoute allowedRoles={["doctor"]}>
-                <DoctorLayout />
-              </ProtectedRoute>
-            }
-          >
-            <Route index element={<DoctorDashboard />} />
-            <Route path="appointments" element={<DoctorAppointments />} />
-          </Route>
+    if (loading) {
+        return <div>Loading...</div>;
+    }
 
-        <Route
-          path="/patient"
-          element={
-            <ProtectedRoute allowedRoles={["patient"]}>
-              <PatientLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<PatientDashboard />} />
-          <Route path="appointments" element={<PatientAppointments />} />
-        </Route>
+    return (
+        <>
+            <Routes>
 
-      </Routes>
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/unauthorized" element={<Unauthorized />} />
 
-      <ToastContainer position="top-right" autoClose={3000} />
-    </>
-  );
+                <Route
+                    path="/admin"
+                    element={
+                        <ProtectedRoute allowedRoles={["admin"]}>
+                            <AdminLayout />
+                        </ProtectedRoute>
+                    }
+                >
+                    <Route index element={<AdminDashboard />} />
+                    <Route path="users" element={<AdminUsers />} />
+                </Route>
+
+                <Route
+                    path="/doctor"
+                    element={
+                        <ProtectedRoute allowedRoles={["doctor"]}>
+                            <DoctorLayout />
+                        </ProtectedRoute>
+                    }
+                >
+                    <Route index element={<DoctorDashboard />} />
+                    <Route path="appointments" element={<DoctorAppointments />} />
+                </Route>
+
+                <Route
+                    path="/patient"
+                    element={
+                        <ProtectedRoute allowedRoles={["patient"]}>
+                            <PatientLayout />
+                        </ProtectedRoute>
+                    }
+                >
+                    <Route index element={<PatientDashboard />} />
+                    <Route path="appointments" element={<PatientAppointments />} />
+                </Route>
+
+                <Route
+                    path="/admin/specialties/create"
+                    element={<AddSpecialty />}
+                />
+
+            </Routes>
+
+            <ToastContainer position="top-right" autoClose={3000} />
+        </>
+    );
 }
 
 export default App;

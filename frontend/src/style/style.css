@@ -1,0 +1,182 @@
+:root {
+    --primary: #4f46e5;
+    --secondary: #22c55e;
+    --danger: #ef4444;
+    --dark: #111827;
+    --light: #f9fafb;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+    width: 250px;
+    min-height: 100vh;
+    background: linear-gradient(180deg, #111827, #1f2937);
+    color: white;
+    padding: 20px;
+    position: sticky;
+    top: 0;
+    transition: all 0.3s ease;
+}
+
+.sidebar h4 {
+    font-weight: bold;
+    margin-bottom: 30px;
+    animation: fadeDown 0.6s ease;
+}
+
+.sidebar a {
+    display: block;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #d1d5db;
+    transition: all 0.3s ease;
+}
+
+.sidebar a:hover {
+    background: var(--primary);
+    color: white;
+    transform: translateX(5px);
+}
+
+.sidebar a.active {
+    background: var(--primary);
+    color: white;
+    font-weight: bold;
+}
+
+/* ===== TOP NAV ===== */
+.topbar {
+    background: white;
+    padding: 15px 20px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    animation: fadeDown 0.5s ease;
+}
+
+.topbar h5 {
+    margin: 0;
+}
+
+/* ===== CARDS ===== */
+.card {
+    border: none;
+    border-radius: 16px;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+/* ===== STATS ===== */
+.stats-card {
+    text-align: center;
+    padding: 20px;
+    border-radius: 16px;
+    background: white;
+    transition: 0.3s;
+}
+
+.stats-card:hover {
+    transform: scale(1.05);
+}
+
+/* ===== TABLE ===== */
+.table {
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.table thead {
+    background: var(--dark);
+    color: white;
+}
+
+.table tbody tr {
+    transition: 0.2s;
+}
+
+.table tbody tr:hover {
+    background: #f3f4f6;
+    transform: scale(1.01);
+}
+
+/* ===== BUTTONS ===== */
+.btn {
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.btn-success {
+    background: var(--secondary);
+    border: none;
+}
+
+.btn-danger {
+    background: var(--danger);
+    border: none;
+}
+
+.btn-primary {
+    background: var(--primary);
+    border: none;
+}
+
+/* ===== BADGES ===== */
+.badge {
+    padding: 6px 10px;
+    border-radius: 8px;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* ===== DASHBOARD CONTAINER ===== */
+.container {
+    animation: fadeIn 0.5s ease;
+}
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c7c7c7;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+}
