@@ -1,17 +1,9 @@
-
-from django.contrib import admin
-from django.urls import include, path
-
+from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-
-
-from availability.views import AvailabilityViewSet
-from availability.views import AvailableSlotsView
-
+from availability.views import AvailabilityViewSet, AvailableSlotsView
 
 router = DefaultRouter()
 router.register(r'', AvailabilityViewSet, basename='availability')
-
 
 urlpatterns = [
     path('', include(router.urls)),
