@@ -1,108 +1,86 @@
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../store/authSlice";
+import { FiLogOut, FiGrid, FiCalendar, FiClock, FiUser } from "react-icons/fi";
+import "../layouts/layout.css";
 
 function DoctorLayout() {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { user, role } = useSelector((state) => state.auth);
 
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate("/login", { replace: true });
+  };
 
-    const { user, role } = useSelector((state) => state.auth);
+  const initials = user?.first_name
+    ? `${user.first_name[0]}${user.last_name?.[0] || ""}`.toUpperCase()
+    : "DR";
 
-    const handleLogout = () => {
-        dispatch(logout());
-        navigate("/login", { replace: true });
-    };
+  return (
+    <div className="layout-wrapper">
 
-    return (
-        <div className="d-flex">
+      {/* Sidebar */}
+      <aside className="sidebar">
 
-            {/* Sidebar */}
-            <div
-                className="bg-dark text-white p-3"
-                style={{ width: "250px", minHeight: "100vh" }}
-            >
-                <h4 className="mb-4">Doctor Panel</h4>
-
-                <ul className="list-unstyled">
-
-                    <li className="mb-2">
-                        <NavLink
-                            to="/doctor"
-                            end
-                            className={({ isActive }) =>
-                                isActive
-                                    ? "text-warning fw-bold text-decoration-none"
-                                    : "text-white text-decoration-none"
-                            }
-                        >
-                            Dashboard
-                        </NavLink>
-                    </li>
-                    <li className="mb-2">
-                        <NavLink
-                            to="/doctor/availability"
-                            className={({ isActive }) =>
-                                isActive
-                                    ? "text-warning fw-bold text-decoration-none"
-                                    : "text-white text-decoration-none"
-                            }
-                        >
-                            Availability
-                        </NavLink>
-                    </li>
-                    <li className="mb-2">
-                        <NavLink
-                            to="/doctor/appointments"
-                            className={({ isActive }) =>
-                                isActive
-                                    ? "text-warning fw-bold text-decoration-none"
-                                    : "text-white text-decoration-none"
-                            }
-                        >
-                            Appointments
-                        </NavLink>
-                    </li>
-
-                </ul>
-            </div>
-
-            {/* Main Content */}
-            <div className="flex-grow-1">
-
-                {/* Navbar */}
-                <div className="bg-light p-3 border-bottom d-flex justify-content-between align-items-center">
-
-                    <h5>
-                        Welcome Dr. {user?.first_name || "Doctor"}
-                    </h5>
-
-                    <div className="d-flex align-items-center gap-3">
-
-                        <span className="badge bg-primary">
-                            {role}
-                        </span>
-
-                        <button
-                            className="btn btn-danger btn-sm"
-                            onClick={handleLogout}
-                        >
-                            Logout
-                        </button>
-
-                    </div>
-
-                </div>
-
-                {/* Page Content */}
-                <div className="p-4">
-                    <Outlet />
-                </div>
-
-            </div>
-
+        <div className="sidebar-brand">
+          <div className="brand-icon">✚</div>
+          <div className="brand-text">
+            <span className="brand-name">MediBook</span>
+            <span className="brand-role">Doctor Portal</span>
+          </div>
         </div>
-    );
+
+        <nav className="sidebar-nav">
+          <NavLink to="/doctor" end>
+            <FiGrid /> Dashboard
+          </NavLink>
+          <NavLink to="/doctor/profile">
+            <FiUser /> My Profile
+          </NavLink>
+          <NavLink to="/doctor/availability">
+            <FiClock /> Availability
+          </NavLink>
+          <NavLink to="/doctor/appointments">
+            <FiCalendar /> Appointments
+          </NavLink>
+        </nav>
+
+        <div className="sidebar-footer">
+          <div className="sidebar-user">
+            <div className="user-avatar">{initials}</div>
+            <div className="user-info">
+              <p className="user-name">Dr. {user?.first_name || "Doctor"}</p>
+              <p className="user-email">{user?.email || ""}</p>
+            </div>
+          </div>
+          <button className="btn-logout" onClick={handleLogout}>
+            <FiLogOut size={14} /> Sign out
+          </button>
+        </div>
+
+      </aside>
+
+      {/* Main */}
+      <div className="layout-main">
+
+        <header className="topbar">
+          <div className="topbar-left">
+            <h5>Welcome, <span>Dr. {user?.first_name || "Doctor"}</span></h5>
+          </div>
+          <div className="topbar-right">
+            <span className="role-badge">{role}</span>
+          </div>
+        </header>
+
+        <div className="layout-content">
+          <Outlet />
+        </div>
+
+      </div>
+    </div>
+  );
 }
 
 export default DoctorLayout;

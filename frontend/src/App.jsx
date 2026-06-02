@@ -29,6 +29,8 @@ import "react-toastify/dist/ReactToastify.css";
 import DoctorProfile from './pages/DoctorProfile';
 import DoctorAvailability from './pages/DoctorAvailability';
 
+import LandingPage from './pages/LandingPage'
+
 function App() {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
@@ -57,6 +59,7 @@ function App() {
     <>
       <Routes>
         {/* Public Routes */}
+        <Route path="/" element={<LandingPage />} />
         <Route path="/" element={<Login />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />

@@ -1,11 +1,13 @@
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../store/authSlice";
+import { FiLogOut, FiGrid, FiCalendar, FiUser } from "react-icons/fi";
+import "../layouts/layout.css";
 
 const NAV_LINKS = [
-  { to: "/patient/dashboard",     icon: "🏠", label: "Dashboard" },
-  { to: "/patient/appointments",  icon: "📋", label: "My Appointments" },
-  { to: "/patient/profile",       icon: "👤", label: "My Profile" },
+  { to: "/patient/dashboard",    icon: <FiGrid />,     label: "Dashboard" },
+  { to: "/patient/appointments", icon: <FiCalendar />, label: "My Appointments" },
+  { to: "/patient/profile",      icon: <FiUser />,     label: "My Profile" },
 ];
 
 function PatientLayout() {
@@ -18,69 +20,75 @@ function PatientLayout() {
     navigate("/login", { replace: true });
   };
 
+  const initials = user?.first_name
+    ? `${user.first_name[0]}${user.last_name?.[0] || ""}`.toUpperCase()
+    : "PT";
+
   return (
-    <div style={{ display: "flex", minHeight: "100vh", fontFamily: "'DM Sans', sans-serif" }}>
+    <div className="layout-wrapper">
+
       {/* Sidebar */}
-      <aside style={{
-        width: 220, background: "#0f172a", color: "#94a3b8",
-        display: "flex", flexDirection: "column", padding: "24px 0",
-        flexShrink: 0,
-      }}>
-        <div style={{ padding: "0 20px 24px", borderBottom: "1px solid #1e293b" }}>
-          <div style={{ color: "#0d9488", fontWeight: 700, fontSize: 18, letterSpacing: -0.3 }}>
-            ⚕ MediCare
-          </div>
-          <div style={{ fontSize: 11, color: "#475569", marginTop: 4, textTransform: "uppercase", letterSpacing: 1 }}>
-            Patient Portal
+      <aside className="sidebar">
+
+        <div className="sidebar-brand">
+          <div className="brand-icon">✚</div>
+          <div className="brand-text">
+            <span className="brand-name">MediBook</span>
+            <span className="brand-role">Patient Portal</span>
           </div>
         </div>
 
-        <nav style={{ flex: 1, padding: "16px 12px" }}>
+        <nav className="sidebar-nav">
           {NAV_LINKS.map(({ to, icon, label }) => (
-            <NavLink
-              key={to}
-              to={to}
-              style={({ isActive }) => ({
-                display: "flex", alignItems: "center", gap: 10,
-                padding: "10px 12px", borderRadius: 8, marginBottom: 4,
-                textDecoration: "none", fontSize: 14, fontWeight: 500,
-                color: isActive ? "#fff" : "#94a3b8",
-                background: isActive ? "#0d9488" : "transparent",
-                transition: "all 0.15s",
-              })}
-            >
-              <span>{icon}</span> {label}
+            <NavLink key={to} to={to}>
+              {icon} {label}
             </NavLink>
           ))}
         </nav>
 
-        <div style={{ padding: "16px 20px", borderTop: "1px solid #1e293b" }}>
-          <div style={{ fontSize: 13, color: "#e2e8f0", fontWeight: 500, marginBottom: 4 }}>
-            {user?.first_name ? `${user.first_name} ${user.last_name || ""}` : "Patient"}
+        <div className="sidebar-footer">
+          <div className="sidebar-user">
+            <div className="user-avatar">{initials}</div>
+            <div className="user-info">
+              <p className="user-name">
+                {user?.first_name
+                  ? `${user.first_name} ${user.last_name || ""}`
+                  : "Patient"}
+              </p>
+              <p className="user-email">{user?.email || ""}</p>
+            </div>
           </div>
-          <div style={{ fontSize: 11, color: "#475569", marginBottom: 12 }}>
-            {user?.email}
-          </div>
-          <button
-            onClick={handleLogout}
-            style={{
-              width: "100%", padding: "8px", border: "1px solid #1e293b",
-              borderRadius: 8, background: "transparent", color: "#94a3b8",
-              cursor: "pointer", fontSize: 13, fontFamily: "inherit",
-              transition: "all 0.15s",
-            }}
-            onMouseOver={(e) => { e.currentTarget.style.borderColor = "#ef4444"; e.currentTarget.style.color = "#ef4444"; }}
-            onMouseOut={(e)  => { e.currentTarget.style.borderColor = "#1e293b"; e.currentTarget.style.color = "#94a3b8"; }}
-          >
-            Sign out
+          <button className="btn-logout" onClick={handleLogout}>
+            <FiLogOut size={14} /> Sign out
           </button>
         </div>
+
       </aside>
 
-      {/* Main content */}
-      <main style={{ flex: 1, background: "#f0f4f8", overflow: "auto" }}>
-        <Outlet />
-      </main>
+      {/* Main */}
+      <div className="layout-main">
+
+        <header className="topbar">
+          <div className="topbar-left">
+            <h5>
+              Welcome,{" "}
+              <span>
+                {user?.first_name
+                  ? `${user.first_name} ${user.last_name || ""}`
+                  : "Patient"}
+              </span>
+            </h5>
+          </div>
+          <div className="topbar-right">
+            <span className="role-badge">patient</span>
+          </div>
+        </header>
+
+        <div className="layout-content">
+          <Outlet />
+        </div>
+
+      </div>
     </div>
   );
 }

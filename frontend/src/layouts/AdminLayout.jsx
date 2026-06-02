@@ -1,107 +1,83 @@
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../store/authSlice";
-import { FiLogOut, FiUsers, FiGrid } from "react-icons/fi";
+import { FiLogOut, FiUsers, FiGrid, FiTag } from "react-icons/fi";
+import "../layouts/layout.css";
 
 function AdminLayout() {
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { user, role } = useSelector((state) => state.auth);
 
-    const { user, role } = useSelector((state) => state.auth);
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate("/login", { replace: true });
+  };
 
-    const handleLogout = () => {
-        dispatch(logout());
-        navigate("/login", { replace: true });
-    };
+  const initials = user?.first_name
+    ? `${user.first_name[0]}${user.last_name?.[0] || ""}`.toUpperCase()
+    : "AD";
 
-    return (
-        <div className="d-flex min-vh-100 bg-light">
+  return (
+    <div className="layout-wrapper">
 
-            {/* Sidebar */}
-            <div
-                className="bg-dark text-white p-4 shadow-lg"
-                style={{
-                    width: "270px",
-                    background: "linear-gradient(180deg, #111827, #0b1220)"
-                }}
-            >
+      {/* Sidebar */}
+      <aside className="sidebar">
 
-                <h4 className="fw-bold text-info mb-4">
-                    🏥 MedAdmin
-                </h4>
-
-                <div className="mb-3 text-secondary small">
-                    Logged in as: <b className="text-white">{role}</b>
-                </div>
-
-                <ul className="list-unstyled">
-
-                    <li className="mb-3">
-                        <NavLink
-                            to="/admin"
-                            end
-                            className={({ isActive }) =>
-                                `d-flex align-items-center gap-2 p-2 rounded text-decoration-none ${
-                                    isActive
-                                        ? "bg-info text-dark fw-bold"
-                                        : "text-white"
-                                }`
-                            }
-                        >
-                            <FiGrid />
-                            Dashboard
-                        </NavLink>
-                    </li>
-
-                    <li className="mb-3">
-                        <NavLink
-                            to="/admin/users"
-                            className={({ isActive }) =>
-                                `d-flex align-items-center gap-2 p-2 rounded text-decoration-none ${
-                                    isActive
-                                        ? "bg-info text-dark fw-bold"
-                                        : "text-white"
-                                }`
-                            }
-                        >
-                            <FiUsers />
-                            Users
-                        </NavLink>
-                    </li>
-
-                </ul>
-
-                <button
-                    onClick={handleLogout}
-                    className="btn btn-outline-info w-100 mt-4 d-flex align-items-center justify-content-center gap-2"
-                >
-                    <FiLogOut /> Logout
-                </button>
-            </div>
-
-            {/* Main */}
-            <div className="flex-grow-1">
-
-                {/* Top bar */}
-                <div className="bg-white shadow-sm px-4 py-3 d-flex justify-content-between align-items-center">
-
-                    <h5 className="mb-0 fw-semibold">
-                        Welcome, <span className="text-primary">{user?.first_name || "Admin"}</span>
-                    </h5>
-
-                    <span className="badge bg-primary px-3 py-2">
-                        {role}
-                    </span>
-
-                </div>
-
-                <div className="p-4">
-                    <Outlet />
-                </div>
-
-            </div>
+        <div className="sidebar-brand">
+          <div className="brand-icon">✚</div>
+          <div className="brand-text">
+            <span className="brand-name">MediBook</span>
+            <span className="brand-role">Admin Panel</span>
+          </div>
         </div>
-    );
+
+        <nav className="sidebar-nav">
+          <NavLink to="/admin" end>
+            <FiGrid /> Dashboard
+          </NavLink>
+          <NavLink to="/admin/users">
+            <FiUsers /> Users
+          </NavLink>
+          <NavLink to="/admin/specialties/create">
+            <FiTag /> Add Specialty
+          </NavLink>
+        </nav>
+
+        <div className="sidebar-footer">
+          <div className="sidebar-user">
+            <div className="user-avatar">{initials}</div>
+            <div className="user-info">
+              <p className="user-name">{user?.first_name || "Admin"}</p>
+              <p className="user-email">{user?.email || ""}</p>
+            </div>
+          </div>
+          <button className="btn-logout" onClick={handleLogout}>
+            <FiLogOut size={14} /> Sign out
+          </button>
+        </div>
+
+      </aside>
+
+      {/* Main */}
+      <div className="layout-main">
+
+        <header className="topbar">
+          <div className="topbar-left">
+            <h5>Welcome, <span>{user?.first_name || "Admin"}</span></h5>
+          </div>
+          <div className="topbar-right">
+            <span className="role-badge">{role}</span>
+          </div>
+        </header>
+
+        <div className="layout-content">
+          <Outlet />
+        </div>
+
+      </div>
+    </div>
+  );
 }
 
 export default AdminLayout;

@@ -1,0 +1,468 @@
+/* ── Hero ── */
+.hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+  min-height: calc(100vh - 70px);
+  padding-top: 60px;
+  padding-bottom: 60px;
+}
+
+.hero-title {
+  font-size: clamp(38px, 5.5vw, 64px);
+  line-height: 1.08;
+  margin-bottom: 20px;
+  letter-spacing: -0.02em;
+}
+
+.hero-subtitle {
+  font-size: 17px;
+  color: var(--neutral-600);
+  max-width: 480px;
+  line-height: 1.75;
+  margin-bottom: 36px;
+}
+
+.hero-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 44px;
+}
+
+.btn-lg {
+  padding: 14px 32px;
+  font-size: 16px;
+}
+
+.hero-stats {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat strong {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--neutral-900);
+  line-height: 1.1;
+}
+
+.stat span {
+  font-size: 13px;
+  color: var(--neutral-600);
+}
+
+.stat-divider {
+  width: 1px;
+  height: 36px;
+  background: var(--neutral-200);
+}
+
+/* Hero card */
+.hero-visual {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.hero-card {
+  width: 100%;
+  max-width: 340px;
+  box-shadow: var(--shadow-lg);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  position: relative;
+  z-index: 1;
+}
+
+.hcard-header { margin-bottom: 16px; }
+
+.hcard-doctor {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.doctor-name {
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--neutral-900);
+}
+
+.doctor-spec {
+  font-size: 13px;
+  color: var(--neutral-600);
+}
+
+.hcard-slots {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.slot-btn {
+  padding: 9px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 500;
+  border: 1.5px solid var(--neutral-200);
+  background: var(--white);
+  color: var(--neutral-800);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.slot-btn:hover {
+  border-color: var(--teal-400);
+  color: var(--teal-600);
+}
+
+.slot-active {
+  background: var(--teal-400) !important;
+  border-color: var(--teal-400) !important;
+  color: white !important;
+}
+
+/* Floating badges */
+.floating-badge {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--white);
+  border: 1px solid var(--neutral-200);
+  border-radius: 100px;
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--neutral-800);
+  box-shadow: var(--shadow-md);
+  white-space: nowrap;
+  animation: float 3s ease-in-out infinite;
+}
+
+.badge-left {
+  bottom: -20px;
+  left: -20px;
+  animation-delay: 0s;
+}
+
+.badge-right {
+  top: -16px;
+  right: -20px;
+  animation-delay: 1.5s;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+/* Doctor avatar */
+.doctor-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.doctor-avatar.sm {
+  width: 36px;
+  height: 36px;
+  font-size: 12px;
+}
+
+.doctor-avatar.lg {
+  width: 72px;
+  height: 72px;
+  font-size: 22px;
+  border-radius: var(--radius-md);
+  margin: 0 auto 16px;
+}
+
+/* ── How it works ── */
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+.step-card {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: 28px 24px;
+  border: 1px solid var(--neutral-200);
+  position: relative;
+  transition: var(--transition);
+}
+
+.step-card:hover {
+  border-color: var(--teal-100);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-3px);
+}
+
+.step-number {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--teal-400);
+  margin-bottom: 14px;
+}
+
+.step-icon {
+  font-size: 28px;
+  margin-bottom: 14px;
+}
+
+.step-title {
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--neutral-900);
+  margin-bottom: 8px;
+}
+
+.step-desc {
+  font-size: 14px;
+  color: var(--neutral-600);
+  line-height: 1.6;
+}
+
+/* ── Features ── */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.feature-card {
+  padding: 28px;
+}
+
+.feature-icon {
+  font-size: 28px;
+  margin-bottom: 14px;
+}
+
+.feature-title {
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--neutral-900);
+  margin-bottom: 8px;
+}
+
+.feature-desc {
+  font-size: 14px;
+  color: var(--neutral-600);
+  line-height: 1.6;
+}
+
+/* ── Doctors ── */
+.doctors-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.doctor-card {
+  text-align: center;
+  padding: 32px 24px;
+}
+
+.doctor-card-name {
+  font-family: var(--font-body);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--neutral-900);
+  margin-bottom: 4px;
+}
+
+.doctor-card-spec {
+  font-size: 14px;
+  color: var(--neutral-600);
+  margin-bottom: 12px;
+}
+
+.doctor-rating {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.rating-star {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--teal-600);
+}
+
+.rating-count {
+  font-size: 13px;
+  color: var(--neutral-400);
+}
+
+/* ── Testimonials ── */
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.testimonial-card {
+  padding: 28px;
+}
+
+.testimonial-quote {
+  font-size: 15px;
+  color: var(--neutral-700, var(--neutral-800));
+  line-height: 1.7;
+  margin-bottom: 24px;
+  font-style: italic;
+}
+
+.testimonial-author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.author-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--neutral-900);
+}
+
+.author-role {
+  font-size: 12px;
+  color: var(--neutral-600);
+}
+
+/* ── CTA Banner ── */
+.cta-banner {
+  background: linear-gradient(135deg, var(--teal-600) 0%, var(--teal-800) 100%);
+  text-align: center;
+}
+
+.cta-inner {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.cta-title {
+  font-size: clamp(28px, 4vw, 44px);
+  color: white;
+  margin-bottom: 16px;
+}
+
+.cta-subtitle {
+  font-size: 17px;
+  color: rgba(255,255,255,0.8);
+  margin-bottom: 36px;
+}
+
+.cta-actions {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+/* ── Footer ── */
+.footer {
+  background: var(--neutral-900);
+  color: var(--neutral-400);
+}
+
+.footer-top {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 48px;
+  margin-bottom: 48px;
+}
+
+.footer-brand .navbar-logo {
+  color: var(--white);
+  margin-bottom: 12px;
+}
+
+.footer-brand .logo-icon {
+  background: var(--teal-400);
+}
+
+.footer-tagline {
+  font-size: 14px;
+  color: var(--neutral-400);
+  max-width: 260px;
+  line-height: 1.65;
+}
+
+.footer-links-group h4 {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--neutral-200, #b4b2a9);
+  margin-bottom: 16px;
+}
+
+.footer-links-group ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.footer-links-group a {
+  font-size: 14px;
+  color: var(--neutral-400);
+  transition: color var(--transition);
+}
+
+.footer-links-group a:hover {
+  color: var(--teal-200);
+}
+
+.footer-bottom {
+  border-top: 1px solid rgba(255,255,255,0.08);
+  padding-top: 24px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--neutral-400);
+}
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+  .hero { grid-template-columns: 1fr; gap: 48px; min-height: auto; }
+  .hero-visual { display: none; }
+  .steps-grid { grid-template-columns: repeat(2, 1fr); }
+  .features-grid { grid-template-columns: repeat(2, 1fr); }
+  .footer-top { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 768px) {
+  .doctors-grid,
+  .testimonials-grid { grid-template-columns: 1fr; }
+  .steps-grid { grid-template-columns: 1fr; }
+  .features-grid { grid-template-columns: 1fr; }
+  .hero-cta { flex-direction: column; }
+  .hero-stats { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .stat-divider { display: none; }
+  .footer-top { grid-template-columns: 1fr; gap: 32px; }
+}
