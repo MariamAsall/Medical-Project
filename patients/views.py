@@ -19,7 +19,7 @@ class PatientProfileView(generics.RetrieveUpdateAPIView):
     PATCH /api/patients/profile/  → partial edit
     """
     serializer_class = PatientProfileSerializer
-    permission_classes = [IsAuthenticated, IsPatient,IsAdmin]
+    permission_classes = [ IsPatient]
 
     def get_object(self):
         return self.request.user.patient_profile
