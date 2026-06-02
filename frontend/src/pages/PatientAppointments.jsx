@@ -165,6 +165,14 @@ function PatientAppointments() {
                       {appt.reason}
                     </div>
                   )}
+                  {appt.approved_at && (
+                    <div className="pt-card-meta-row">
+                      <span className="pt-card-meta-icon">✅</span>
+                      Approved At:
+                      {" "}
+                      {new Date(appt.approved_at).toLocaleString()}
+                    </div>
+                  )}
                 </div>
 
                 {!isCancelled && (

@@ -28,6 +28,11 @@ class Appointments(models.Model):
         default='pending'
     )
     notes=models.TextField(  blank=True )
+    approved_at = models.DateTimeField(
+        null=True,
+        blank=True
+    )
+
 
     created_at=models.DateTimeField( auto_now_add=True  )
 

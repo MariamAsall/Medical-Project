@@ -27,6 +27,7 @@ from appointments.serlizer import AppointmentSerializer, AppointmentCreateSerial
 from django.core.mail import send_mail
 from django.conf import settings
 from .utils import send_appointment_email
+from django.utils import timezone
 
 
 
@@ -94,11 +95,23 @@ class AppointmenstViewSet(viewsets.ModelViewSet):
     def perform_update(self, serializer):
 
         appointment = self.get_object()
+
         old_status = appointment.status
+
         updated_appointment = serializer.save()
+
         new_status = updated_appointment.status
 
-        # Send email only if status changed
+        if new_status == "approved":
+
+            updated_appointment.approved_at = timezone.now()
+            updated_appointment.save()
+
+        elif new_status == "cancelled":
+
+            updated_appointment.approved_at = None
+            updated_appointment.save()
+
         if old_status != new_status:
 
             try:
@@ -113,9 +126,8 @@ class AppointmenstViewSet(viewsets.ModelViewSet):
                 )
 
             except Exception as e:
+
                 print("Email Error:", e)
-
-
 # class AppointmenstViewSet(viewsets.ModelViewSet):
 
 #     permission_classes = [CanManageAppointments]
