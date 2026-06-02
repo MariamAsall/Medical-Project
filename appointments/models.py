@@ -1,43 +1,79 @@
+# from django.db import models
+
+
+# # Create your models here.
+# from doctors.models import DoctorProfile
+
+
+# from patients.models import PatientProfile
+
+# class Appointments(models.Model):
+
+#     STATUS=(  ('pending','Pending'),
+#         ('confirmed','Confirmed'),
+#         ('completed','Completed'),
+#         ('cancelled','Cancelled')
+#     )
+
+#     doctor=models.ForeignKey(DoctorProfile  , on_delete=models.CASCADE, related_name='doctor_appointments' )
+
+#     patient=models.ForeignKey( PatientProfile, on_delete=models.CASCADE,  related_name='patient_appointments')
+
+#     date_time=models.DateTimeField()
+#     appointment_time = models.TimeField() 
+#     reason=models.TextField()
+
+#     status=models.CharField(
+#         max_length=20,
+#         choices=STATUS,
+#         default='pending'
+#     )
+#     notes=models.TextField(  blank=True )
+
+#     created_at=models.DateTimeField( auto_now_add=True  )
+
+#     class Meta:
+#         constraints=[
+#             models.UniqueConstraint(
+#                 fields=[
+#                     'doctor',
+#                     'date_time'
+#                 ],
+#                 name='prevent_double_booking'
+#             )
+            
+#         ]
+#     def __str__(self):
+#         return f"{self.patient} → Dr.{self.doctor} at {self.date_time}"
+    
 from django.db import models
-
-
-# Create your models here.
 from doctors.models import DoctorProfile
-
-
 from patients.models import PatientProfile
 
 class Appointments(models.Model):
 
-    STATUS=(  ('pending','Pending'),
-        ('confirmed','Confirmed'),
-        ('completed','Completed'),
-        ('cancelled','Cancelled')
+    STATUS = (
+        ('pending',   'Pending'),
+        ('confirmed', 'Confirmed'),
+        ('completed', 'Completed'),
+        ('cancelled', 'Cancelled'),
     )
 
-    doctor=models.ForeignKey(DoctorProfile  , on_delete=models.CASCADE, related_name='doctor_appointments' )
-
-    patient=models.ForeignKey( PatientProfile, on_delete=models.CASCADE,  related_name='patient_appointments')
-
-    date_time=models.DateTimeField()
-    reason=models.TextField()
-
-    status=models.CharField(
-        max_length=20,
-        choices=STATUS,
-        default='pending'
-    )
-    notes=models.TextField(  blank=True )
-
-    created_at=models.DateTimeField( auto_now_add=True  )
+    doctor  = models.ForeignKey(DoctorProfile,  on_delete=models.CASCADE, related_name='doctor_appointments')
+    patient = models.ForeignKey(PatientProfile, on_delete=models.CASCADE, related_name='patient_appointments')
+    date_time = models.DateTimeField()   # stores exact slot, e.g. 2025-06-10 14:00:00
+    reason  = models.TextField()
+    status  = models.CharField(max_length=20, choices=STATUS, default='pending')
+    notes   = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        constraints=[
+        constraints = [
             models.UniqueConstraint(
-                fields=[
-                    'doctor',
-                    'date_time'
-                ],
+                fields=['doctor', 'date_time'],
                 name='prevent_double_booking'
             )
         ]
+
+    def __str__(self):
+        return f"{self.patient} → Dr.{self.doctor} at {self.date_time}"

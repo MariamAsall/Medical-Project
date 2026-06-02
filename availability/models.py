@@ -21,6 +21,7 @@ class DoctorAvailability(models.Model):
     weekday = models.IntegerField(choices=DAYS)
     start_time = models.TimeField()
     end_time = models.TimeField()
+    slot_duration = models.IntegerField(default=30)
     is_available = models.BooleanField(default=True )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField( auto_now=True)
