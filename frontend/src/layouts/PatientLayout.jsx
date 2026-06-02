@@ -5,6 +5,7 @@ import { logout } from "../store/authSlice";
 const NAV_LINKS = [
   { to: "/patient/dashboard",     icon: "🏠", label: "Dashboard" },
   { to: "/patient/appointments",  icon: "📋", label: "My Appointments" },
+  { to: "/patient/profile",       icon: "👤", label: "My Profile" },
 ];
 
 function PatientLayout() {
