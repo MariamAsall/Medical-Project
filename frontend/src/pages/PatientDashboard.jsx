@@ -5,22 +5,40 @@ import "./patient.css";
 
 function PatientDashboard() {
   const [doctors, setDoctors] = useState([]);
+  const [specialties, setSpecialties] = useState([]);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  const fetchDoctors = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await api.get("doctors/profiles/all/");
-      setDoctors(Array.isArray(res.data) ? res.data : []);
-    } catch (err) {
-      setError("Failed to load doctors. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+ const fetchDoctors = async () => {
+  setLoading(true);
+  setError(null);
+
+  try {
+    const [doctorsRes, specialtiesRes] = await Promise.all([
+      api.get("doctors/profiles/all/"),
+      api.get("doctors/specialties/")
+    ]);
+
+
+    setDoctors(Array.isArray(doctorsRes.data) ? doctorsRes.data : []);
+setSpecialties(specialtiesRes.data.results || []);
+
+  } catch (err) {
+    setError("Failed to load doctors. Please try again.");
+  } finally {
+    setLoading(false);
+  }
+};
+
+const getSpecialtyName = (specialtyId) => {
+  const specialty = specialties.find(
+    (item) => item.id === specialtyId
+  );
+
+  return specialty?.name || "General Practitioner";
+};
 
   useEffect(() => {
     fetchDoctors();
@@ -76,7 +94,7 @@ function PatientDashboard() {
               <div className="pt-card-avatar">{getInitials(doc)}</div>
               <div className="pt-card-title">{getDoctorName(doc)}</div>
               <div className="pt-card-sub">
-                {doc.specialty?.name || "General Practitioner"}
+                {getSpecialtyName(doc.specialty)}
               </div>
               <div className="pt-card-meta">
                 <div className="pt-card-meta-row">
