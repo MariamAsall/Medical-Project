@@ -28,19 +28,21 @@ function Login() {
         try {
             const response = await api.post("auth/login/", formData);
 
-            localStorage.setItem(
+            // Changed from localStorage to sessionStorage for multi-tab isolation
+            sessionStorage.setItem(
                 "access_token",
                 response.data.tokens.access
             );
 
-            localStorage.setItem(
+            sessionStorage.setItem(
                 "refresh_token",
                 response.data.tokens.refresh
             );
 
             const role = response.data.user.role.toLowerCase();
 
-            localStorage.setItem("role", role);
+            sessionStorage.setItem("role", role);
+            sessionStorage.setItem("user", JSON.stringify(response.data.user));
 
             dispatch(
                 loginSuccess({
@@ -49,9 +51,7 @@ function Login() {
                 })
             );
 
-            //  SUCCESS NOTIFICATION
             notifySuccess("Login successful ");
-
 
             if (role === "admin") {
                 navigate("/admin");
@@ -64,33 +64,31 @@ function Login() {
         } catch (error) {
             const data = error.response?.data;
 
-    const message =
-        data?.non_field_errors?.[0] ||
-        data?.detail ||
-        "Login failed";
+            const message =
+                data?.non_field_errors?.[0] ||
+                data?.detail ||
+                "Login failed";
 
-    if (message.includes("pending admin approval")) {
-        notifyError("Your account is waiting for admin approval.");
-    }
-    else if (message.includes("deactivated")) {
-        notifyError("Your account has been blocked.");
-    }
-    else if (message.includes("Invalid email or password")) {
-        notifyError("Invalid email or password.");
-    }
-    else {
-        notifyError(message);
-    }; }  }
+            if (message.includes("pending admin approval")) {
+                notifyError("Your account is waiting for admin approval.");
+            }
+            else if (message.includes("deactivated")) {
+                notifyError("Your account has been blocked.");
+            }
+            else if (message.includes("Invalid email or password")) {
+                notifyError("Invalid email or password.");
+            }
+            else {
+                notifyError(message);
+            }
+        }
+    };
 
     return (
         <div className="container d-flex justify-content-center align-items-center vh-100">
-
             <div className="card shadow p-4" style={{ width: "400px" }}>
-
                 <h3 className="text-center mb-4">Login</h3>
-
                 <form onSubmit={handleSubmit}>
-
                     <div className="mb-3">
                         <label className="form-label">Email</label>
                         <input
@@ -100,7 +98,6 @@ function Login() {
                             onChange={handleChange}
                         />
                     </div>
-
                     <div className="mb-3">
                         <label className="form-label">Password</label>
                         <input
@@ -110,25 +107,16 @@ function Login() {
                             onChange={handleChange}
                         />
                     </div>
-
                     <button className="btn btn-primary w-100">
                         Login
                     </button>
-
                     <div className="text-center mt-3">
-
-                        <p className="mb-1">
-                            Don't have an account?
-                        </p>
-
+                        <p className="mb-1">Don't have an account?</p>
                         <Link to="/register" className="btn btn-link">
                             Create account
                         </Link>
-
                     </div>
-
                 </form>
-
             </div>
         </div>
     );

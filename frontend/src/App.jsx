@@ -28,20 +28,26 @@ import "react-toastify/dist/ReactToastify.css";
 import DoctorProfile from './pages/DoctorProfile';
 import DoctorAvailability from './pages/DoctorAvailability';
 
+import PatientProfile from "./pages/PatientProfile";
+
 function App() {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
 
   // 1. Keep your auth session persistence logic at the top
-  useEffect(() => {
-    const token = localStorage.getItem("access_token");
-    const role = localStorage.getItem("role");
+useEffect(() => {
+    // Read strictly from sessionStorage to achieve clean multi-tab sandboxing
+    const token = sessionStorage.getItem("access_token");
+    const role = sessionStorage.getItem("role");
+    const savedUser = sessionStorage.getItem("user");
 
     if (token && role) {
-      dispatch(loginSuccess({
-        user: null,
-        role: role,
-      }));
+      dispatch(
+        loginSuccess({
+          role: role,
+          user: savedUser ? JSON.parse(savedUser) : null,
+        })
+      );
     }
 
     setLoading(false);
@@ -106,6 +112,7 @@ function App() {
           <Route path="doctors/:doctorId/slots" element={<DoctorSlots />} />
           <Route path="payment" element={<Payment />} />
           <Route path="appointments" element={<PatientAppointments />} />
+          <Route path="profile" element={<PatientProfile />} />
         </Route>
       </Routes>
 
