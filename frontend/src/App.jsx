@@ -13,6 +13,7 @@ import PatientDashboard from "./pages/PatientDashboard";
 import Unauthorized from "./pages/Unauthorized";
 import AdminUsers from "./pages/AdminUsers";
 import PatientAppointments from "./pages/PatientAppointments";
+import PatientProfile from "./pages/PatientProfile";
 import DoctorAppointments from "./pages/DoctorAppointments";
 import DoctorSlots from "./pages/DoctorSlots";
 import Payment from "./pages/Payment";
@@ -106,6 +107,7 @@ function App() {
           <Route path="doctors/:doctorId/slots" element={<DoctorSlots />} />
           <Route path="payment" element={<Payment />} />
           <Route path="appointments" element={<PatientAppointments />} />
+          <Route path="profile" element={<PatientProfile />} />
         </Route>
       </Routes>
 
