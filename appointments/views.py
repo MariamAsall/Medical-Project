@@ -29,8 +29,7 @@ from django.conf import settings
 from .utils import send_appointment_email
 
 
-from availability.models import DoctorAvailability
-from django.utils.timezone import localtime
+
 
 
 
@@ -60,25 +59,31 @@ class AppointmenstViewSet(viewsets.ModelViewSet):
         )
 
     def get_queryset(self):
+
         user = self.request.user
 
-        user_role = getattr(user, 'role', '').upper()
-
         if user.role == "ADMIN":
+
             return Appointments.objects.all()
 
         if user.role == "DOCTOR":
+
             if hasattr(user, 'doctorprofile'):
+
                 return Appointments.objects.filter(
                     doctor=user.doctorprofile
                 )
+
             return Appointments.objects.none()
 
         if user.role == "PATIENT":
+
             if hasattr(user, 'patient_profile'):
+
                 return Appointments.objects.filter(
                     patient=user.patient_profile
                 )
+
             return Appointments.objects.none()
 
         return Appointments.objects.none()
@@ -190,20 +195,6 @@ class BookAppointmentView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         appointment = serializer.save(patient=self.request.user.patient_profile)
-
-        local_dt = localtime(appointment.date_time)
-        availability = DoctorAvailability.objects.filter(
-            doctor=appointment.doctor,
-            weekday=local_dt.weekday(),
-            start_time__lte=local_dt.time(),
-            end_time__gte=local_dt.time(),
-            is_available=True
-        ).first()
-        
-        if availability:
-            availability.is_available = False
-            availability.save()
-
         try:
             send_appointment_email(
                 "Appointment Booked",

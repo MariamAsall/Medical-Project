@@ -18,6 +18,7 @@ function DoctorSlots() {
   const { doctorId } = useParams();
   const navigate = useNavigate();
   const [slots, setSlots] = useState([]);
+  const [bookedDateTimes, setBookedDateTimes] = useState(new Set());
   const [doctorName, setDoctorName] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -27,13 +28,37 @@ function DoctorSlots() {
       setLoading(true);
       setError(null);
       try {
-        const [slotsRes, docRes] = await Promise.all([
+        const [slotsRes, docRes, apptRes] = await Promise.all([
           api.get(`availability/?doctor=${doctorId}`),
           api.get(`doctors/profiles/all/`),
+          api.get(`appointments/manage/`),
         ]);
 
         const raw = slotsRes.data;
         setSlots(Array.isArray(raw) ? raw : raw.results ?? []);
+
+        // Build a set of "weekday|HH:MM" strings for slots already booked
+        // by checking confirmed/pending appointments for this doctor
+        const appts = Array.isArray(apptRes.data)
+          ? apptRes.data
+          : apptRes.data?.results ?? [];
+
+        const booked = new Set(
+          appts
+            .filter(
+              (a) =>
+                String(a.doctor) === String(doctorId) &&
+                ["pending", "confirmed"].includes(a.status)
+            )
+            .map((a) => {
+              const dt = new Date(a.date_time);
+              const weekday = (dt.getDay() + 6) % 7; // Mon=0
+              const hh = String(dt.getHours()).padStart(2, "0");
+              const mm = String(dt.getMinutes()).padStart(2, "0");
+              return `${weekday}|${hh}:${mm}`;
+            })
+        );
+        setBookedDateTimes(booked);
 
         const docs = Array.isArray(docRes.data) ? docRes.data : [];
         const found = docs.find((d) => String(d.id) === String(doctorId));
@@ -51,7 +76,11 @@ function DoctorSlots() {
     fetchAll();
   }, [doctorId]);
 
-  const isSlotBooked = (slot) => slot.is_booked === true;
+  // A slot is "booked" if there's an active appointment at that weekday+time
+  const isSlotBooked = (slot) => {
+    const hh = slot.start_time.substring(0, 5); // "HH:MM"
+    return bookedDateTimes.has(`${slot.weekday}|${hh}`);
+  };
 
   const handleSlotClick = (slot) => {
     if (isSlotBooked(slot)) return;

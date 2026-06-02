@@ -75,7 +75,7 @@ class AppointmentCreateSerializer(serializers.ModelSerializer):
             weekday=weekday,
             start_time__lte=appointment_time,
             end_time__gte=appointment_time,
-            is_available=True,
+            #is_available=True,
         ).first()
 
         # availability = (
@@ -96,35 +96,26 @@ class AppointmentCreateSerializer(serializers.ModelSerializer):
         doctor_exists = Appointments.objects.filter(
             doctor=doctor,
             date_time=date_time
-        ).exclude(status__iexact="cancelled").exists()
+        ).exists()
 
         if doctor_exists:
+
             raise serializers.ValidationError(
-                "Doctor already has an active appointment at this time."
+                "Doctor already has appointment at this time."
             )
 
-        # Prevent patient booking same time (Ignore cancelled slots)
-        patient_exists = Appointments.objects.filter(
-            patient=patient_profile, 
-            date_time=date_time
-        ).exclude(status__iexact="cancelled").exists()
+        # Prevent patient booking same time
+        patient_exists = Appointments.objects.filter( patient=patient_profile, date_time=date_time).exists()
 
         if patient_exists:
-            raise serializers.ValidationError(
-                "You already have another active appointment at this time."
-            )
+
+            raise serializers.ValidationError(  "You already have another appointment at this time."  )
         
-        # Prevent patient booking two appointments with the same doctor on the same day (Ignore cancelled slots)
-        same_day_exists = Appointments.objects.filter(
-            patient=patient_profile,
-            doctor=doctor,
-            date_time__date=date_time.date()
-        ).exclude(status__iexact="cancelled").exists()
+        same_day_exists = Appointments.objects.filter( patient=patient_profile,doctor=doctor,date_time__date=date_time.date()).exists()
 
         if same_day_exists:
-            raise serializers.ValidationError(
-                "You already have an active appointment with this doctor on this day."
-            )
+
+                raise serializers.ValidationError(  "You already have an appointment with this doctor on this day.")
 
         return data
 
@@ -146,4 +137,3 @@ class AppointmentSerializer(serializers.ModelSerializer):
         model = Appointments
         fields = "__all__"
         read_only_fields = ['created_at']
-        validators = []
