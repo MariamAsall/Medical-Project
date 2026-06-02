@@ -52,7 +52,7 @@ export default function PatientProfile() {
       setServerBackup(loadedData);
 
       // Save into sessionStorage to keep sidebar robust on reloads
-      const savedRole = sessionStorage.getItem("role") || "patient";
+      const savedRole = localStorage.getItem("role") || "patient";
       const userPayload = {
         email: loadedData.email,
         first_name: loadedData.first_name,
@@ -60,7 +60,7 @@ export default function PatientProfile() {
         role: savedRole.toUpperCase()
       };
 
-      sessionStorage.setItem("user", JSON.stringify(userPayload));
+      localStorage.setItem("user", JSON.stringify(userPayload));
       dispatch(
         loginSuccess({
           user: userPayload,
@@ -127,7 +127,7 @@ export default function PatientProfile() {
       setForm(updatedData);
       setServerBackup(updatedData);
 
-      const savedRole = sessionStorage.getItem("role") || "patient";
+      const savedRole = localStorage.getItem("role") || "patient";
       const updatedUserPayload = {
         email: updatedData.email,
         first_name: updatedData.first_name,
@@ -135,7 +135,7 @@ export default function PatientProfile() {
         role: savedRole.toUpperCase()
       };
 
-      sessionStorage.setItem("user", JSON.stringify(updatedUserPayload));
+      localStorage.setItem("user", JSON.stringify(updatedUserPayload));
       
       dispatch(
         loginSuccess({
