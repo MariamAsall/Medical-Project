@@ -59,14 +59,20 @@ function DoctorAvailability() {
             });
             fetchSlots(); 
         } catch (err) {
-            const data = err.response?.data;
-            if (data) {
-                notifyError("End time must be after start time.");
-                
-            } else {
-                notifyError("Something went wrong.");
-            }
-        } finally {
+    const data = err.response?.data;
+
+    let message = "Something went wrong.";
+
+    if (typeof data === "string") {
+        message = data;
+    } else if (data) {
+        message = Object.values(data)
+            .flat()
+            .join(" ");
+    }
+
+    notifyError(message);
+} finally {
             setSaving(false);
         }
     };

@@ -89,7 +89,10 @@ class AppointmenstViewSet(viewsets.ModelViewSet):
         return Appointments.objects.none()
 
     def get_serializer_class(self):
-        return AppointmentSerializer
+            if self.action in ["update", "partial_update"]:
+               return AppointmentCreateSerializer
+
+            return AppointmentSerializer
 
     def perform_update(self, serializer):
 

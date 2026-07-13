@@ -51,9 +51,8 @@ class AppointmentCreateSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
 
-        doctor = data.get("doctor")
-
-        date_time = data.get("date_time")
+        doctor = data.get("doctor", getattr(self.instance, "doctor", None))
+        date_time = data.get("date_time", getattr(self.instance, "date_time", None))
 
         if not doctor or not date_time:
             return data
@@ -94,9 +93,13 @@ class AppointmentCreateSerializer(serializers.ModelSerializer):
 
         # Prevent doctor double booking
         doctor_exists = Appointments.objects.filter(
-            doctor=doctor,
-            date_time=date_time
-        ).exists()
+    doctor=doctor,
+                date_time=date_time,
+                    ).exclude(
+                        pk=self.instance.pk if self.instance else None
+                    ).exclude(
+                        status="cancelled"
+                    ).exists()
 
         if doctor_exists:
 
@@ -105,14 +108,28 @@ class AppointmentCreateSerializer(serializers.ModelSerializer):
             )
 
         # Prevent patient booking same time
-        patient_exists = Appointments.objects.filter( patient=patient_profile, date_time=date_time).exists()
+        patient_exists = Appointments.objects.filter(
+                patient=patient_profile,
+                date_time=date_time,
+            ).exclude(
+                pk=self.instance.pk if self.instance else None
+            ).exclude(
+                status="cancelled"
+            ).exists()
 
         if patient_exists:
 
             raise serializers.ValidationError(  "You already have another appointment at this time."  )
         
-        same_day_exists = Appointments.objects.filter( patient=patient_profile,doctor=doctor,date_time__date=date_time.date()).exists()
-
+        same_day_exists = Appointments.objects.filter(
+                    patient=patient_profile,
+                    doctor=doctor,
+                    date_time__date=date_time.date(),
+                ).exclude(
+                    pk=self.instance.pk if self.instance else None
+                ).exclude(
+                    status="cancelled"
+                ).exists()
         if same_day_exists:
 
                 raise serializers.ValidationError(  "You already have an appointment with this doctor on this day.")
