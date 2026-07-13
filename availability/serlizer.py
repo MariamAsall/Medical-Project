@@ -47,3 +47,10 @@ class AvailabilitySerializer(serializers.ModelSerializer):
             )
 
         return data
+    
+
+
+
+class AvailableSlotSerializer(serializers.Serializer):
+    start = serializers.DateTimeField()
+    end = serializers.DateTimeField()

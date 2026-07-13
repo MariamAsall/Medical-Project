@@ -18,7 +18,6 @@ function DoctorSlots() {
   const { doctorId } = useParams();
   const navigate = useNavigate();
   const [slots, setSlots] = useState([]);
-  const [bookedDateTimes, setBookedDateTimes] = useState(new Set());
   const [doctorName, setDoctorName] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -28,37 +27,14 @@ function DoctorSlots() {
       setLoading(true);
       setError(null);
       try {
-        const [slotsRes, docRes, apptRes] = await Promise.all([
-          api.get(`availability/?doctor=${doctorId}`),
-          api.get(`doctors/profiles/all/`),
-          api.get(`appointments/manage/`),
-        ]);
+       const [slotsRes, docRes] = await Promise.all([
+  api.get(`availability/slots/?doctor=${doctorId}`),
+  api.get(`doctors/profiles/all/`),
+]);
 
-        const raw = slotsRes.data;
-        setSlots(Array.isArray(raw) ? raw : raw.results ?? []);
+        setSlots(slotsRes.data);
 
-        // Build a set of "weekday|HH:MM" strings for slots already booked
-        // by checking confirmed/pending appointments for this doctor
-        const appts = Array.isArray(apptRes.data)
-          ? apptRes.data
-          : apptRes.data?.results ?? [];
-
-        const booked = new Set(
-          appts
-            .filter(
-              (a) =>
-                String(a.doctor) === String(doctorId) &&
-                ["pending", "confirmed"].includes(a.status)
-            )
-            .map((a) => {
-              const dt = new Date(a.date_time);
-              const weekday = (dt.getDay() + 6) % 7; // Mon=0
-              const hh = String(dt.getHours()).padStart(2, "0");
-              const mm = String(dt.getMinutes()).padStart(2, "0");
-              return `${weekday}|${hh}:${mm}`;
-            })
-        );
-        setBookedDateTimes(booked);
+       
 
         const docs = Array.isArray(docRes.data) ? docRes.data : [];
         const found = docs.find((d) => String(d.id) === String(doctorId));
@@ -77,25 +53,18 @@ function DoctorSlots() {
   }, [doctorId]);
 
   // A slot is "booked" if there's an active appointment at that weekday+time
-  const isSlotBooked = (slot) => {
-    const hh = slot.start_time.substring(0, 5); // "HH:MM"
-    return bookedDateTimes.has(`${slot.weekday}|${hh}`);
-  };
+
 
   const handleSlotClick = (slot) => {
-    if (isSlotBooked(slot)) return;
-    navigate("/patient/payment", {
-      state: {
-        doctorId,
-        doctorName,
-        slotId: slot.id,
-        day: DAYS[slot.weekday] ?? slot.weekday_name ?? slot.weekday,
-        weekday: slot.weekday,
-        start_time: slot.start_time,
-        end_time: slot.end_time,
-      },
-    });
-  };
+  navigate("/patient/payment", {
+    state: {
+      doctorId,
+      doctorName,
+      start: slot.start,
+      end: slot.end,
+    },
+  });
+};
 
   if (loading) {
     return (
@@ -106,8 +75,7 @@ function DoctorSlots() {
     );
   }
 
-  const availableCount = slots.filter((s) => !isSlotBooked(s)).length;
-
+const availableCount = slots.length;
   return (
     <div className="pt-page">
       <button className="pt-back-link" onClick={() => navigate("/patient/dashboard")}>
@@ -137,10 +105,10 @@ function DoctorSlots() {
           </div>
         ) : (
           slots.map((slot) => {
-            const booked = isSlotBooked(slot);
+            const booked = false;
             return (
               <div
-                key={slot.id}
+                  key={`${slot.start}-${slot.end}`}
                 className={`pt-card ${booked ? "pt-card-booked" : "pt-card-clickable"}`}
                 onClick={() => handleSlotClick(slot)}
               >
@@ -151,11 +119,17 @@ function DoctorSlots() {
                 </div>
 
                 <div className="pt-slot-time">
-                  {formatTime(slot.start_time)}
+               {new Date(slot.start).toLocaleTimeString([], {
+  hour: "2-digit",
+  minute: "2-digit",
+})}
                 </div>
                 <div className="pt-slot-day">
-                  {slot.weekday_name ?? DAYS[slot.weekday] ?? slot.weekday} · until {formatTime(slot.end_time)}
-                </div>
+{new Date(slot.start).toLocaleDateString()} · until{" "}
+{new Date(slot.end).toLocaleTimeString([], {
+  hour: "2-digit",
+  minute: "2-digit",
+})}                </div>
 
                 {!booked && (
                   <button

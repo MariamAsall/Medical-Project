@@ -12,35 +12,12 @@ function formatTime(t) {
   return `${h12}:${m} ${ampm}`;
 }
 
-// Given a weekday name (e.g. "Monday") and a time string (e.g. "13:00:00"),
-// compute the next occurrence of that weekday as a full ISO datetime string.
-function buildDateTime(dayName, timeStr) {
-  const DAYS = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
-  const targetDay = DAYS.indexOf(dayName); // 0=Sun … 6=Sat
-  if (targetDay === -1 || !timeStr) return null;
-
-  const now = new Date();
-  const todayDay = now.getDay(); // 0=Sun … 6=Sat
-  let daysAhead = targetDay - todayDay;
-  if (daysAhead <= 0) daysAhead += 7; // always pick a future date
-
-  const date = new Date(now);
-  date.setDate(now.getDate() + daysAhead);
-
-  const [h, m, s] = timeStr.split(":");
-  date.setHours(parseInt(h, 10), parseInt(m, 10), parseInt(s ?? "0", 10), 0);
-
-  // Return full ISO 8601 string in UTC — universally accepted by Django
-  return date.toISOString();
-}
-
 function Payment() {
   const navigate = useNavigate();
   const location = useLocation();
   const booking = location.state || {};
 
-  const { doctorId, doctorName, day, start_time, end_time } = booking;
-
+  const { doctorId, doctorName, start, end } = booking;
   const [form, setForm] = useState({
     reason: "",
     cardName: "",
@@ -51,7 +28,7 @@ function Payment() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  if (!doctorId || !day || !start_time) {
+  if (!doctorId || !start)  {
     return (
       <div className="pt-center-state">
         <span style={{ fontSize: 36 }}>🚫</span>
@@ -91,11 +68,7 @@ function Payment() {
     }
 
     // Build the date_time the backend expects from the slot's weekday + start time
-    const date_time = buildDateTime(day, start_time);
-    if (!date_time) {
-      setError("Could not determine appointment time. Please go back and select a slot again.");
-      return;
-    }
+    const date_time = start;
 
     setLoading(true);
     setError(null);
@@ -145,13 +118,22 @@ function Payment() {
 
           <div className="pt-summary-row">
             <span>📅</span>
-            <span>{day}</span>
+            <span>
+  {new Date(start).toLocaleDateString()}
+</span>
           </div>
           <div className="pt-summary-row">
             <span>🕐</span>
             <span>
-              {formatTime(start_time)}
-              {end_time ? ` – ${formatTime(end_time)}` : ""}
+            {new Date(start).toLocaleTimeString([], {
+  hour: "2-digit",
+  minute: "2-digit",
+})}
+{" – "}
+{new Date(end).toLocaleTimeString([], {
+  hour: "2-digit",
+  minute: "2-digit",
+})}
             </span>
           </div>
 

@@ -19,24 +19,7 @@ function statusBadge(status) {
   return "pt-badge-pending";
 }
 
-// Fixed buildDateTime to cleanly append future dates matching slot values
-function buildDateTime(dayIndex, timeStr) {
-  if (dayIndex === undefined || !timeStr) return null;
-  const now = new Date();
-  const todayDay = now.getDay(); 
-  const targetDay = dayIndex === 6 ? 0 : dayIndex + 1; 
-  
-  let daysAhead = targetDay - todayDay;
-  if (daysAhead <= 0) daysAhead += 7;
 
-  const targetDate = new Date(now);
-  targetDate.setDate(now.getDate() + daysAhead);
-  
-  const [h, m] = timeStr.split(":");
-  targetDate.setHours(parseInt(h, 10), parseInt(m, 10), 0, 0);
-  
-  return targetDate.toISOString();
-}
 
 function PatientAppointments() {
   const [appointments, setAppointments] = useState([]);
@@ -100,9 +83,8 @@ function PatientAppointments() {
 
     try {
       // FIX: Matches backend expected query structure: availability/?doctor=ID
-      const res = await api.get(`availability/?doctor=${doctorId}`);
-      const rawData = res.data;
-      setSlots(Array.isArray(rawData) ? rawData : rawData.results ?? []);
+      const res = await api.get(`availability/slots/?doctor=${doctorId}`);
+      setSlots(res.data);
     } catch (err) {
       console.error("Failed fetching valid doctor schedules", err);
     } finally {
@@ -116,14 +98,11 @@ function PatientAppointments() {
     setError(null);
 
     const slot = slots[selectedSlotIndex];
-    const computedIsoString = buildDateTime(slot.weekday, slot.start_time);
 
-    try {
-      await api.patch(`appointments/manage/${selectedAppt.id}/`, {
-        date_time: computedIsoString
-      });
-      setShowModal(false);
-      await fetchAppointments();
+try {
+  await api.patch(`appointments/manage/${selectedAppt.id}/`, {
+    date_time: slot.start,
+  });
     } catch (err) {
       setError(err.response?.data?.detail || "Selected slot validation failed on server.");
     } finally {
@@ -239,9 +218,18 @@ function PatientAppointments() {
                 >
                   <option value="">Choose a slot…</option>
                   {slots.map((slot, index) => (
-                    <option key={slot.id || index} value={index}>
-                      {DAYS[slot.weekday]}s at {formatTime(slot.start_time)} - {formatTime(slot.end_time)}
-                    </option>
+                  <option key={index} value={index}>
+  {new Date(slot.start).toLocaleDateString()} •{" "}
+  {new Date(slot.start).toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  })}
+  {" - "}
+  {new Date(slot.end).toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  })}
+</option>
                   ))}
                 </select>
               )}
