@@ -199,8 +199,8 @@ Built as a 5-person capstone project. All members collaborated across the full s
 
 | Name | Contribution |
 |---|---|
-| **Mariam Asal (Maryoma)** | Project Lead · Contributed across backend & frontend |
-| **Aml** | Contributed across backend & frontend |
-| **Nada** | Contributed across backend & frontend |
-| **Sami** | Contributed across backend & frontend |
-| **Mohamed** | Contributed across backend & frontend |
+| **Mariam Asal ** | Project Lead · Contributed across backend & frontend |
+| **Aml Osamaa** | Contributed across backend & frontend |
+| **Nada Ayman** | Contributed across backend & frontend |
+| **Ahmed Samy** | Contributed across backend & frontend |
+| **Mohamed Elfittiany** | Contributed across backend & frontend |
