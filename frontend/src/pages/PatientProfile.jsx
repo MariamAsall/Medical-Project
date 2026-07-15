@@ -13,6 +13,61 @@ export default function PatientProfile() {
   const [saving, setSaving] = useState(false);
   const [serverBackup, setServerBackup] = useState(null);
 
+
+const [passwordForm, setPasswordForm] = useState({
+  current_password: "",
+  new_password: "",
+  confirm_password: "",
+});
+
+const [changingPassword, setChangingPassword] = useState(false);
+const handlePasswordChange = (e) => {
+  setPasswordForm((prev) => ({
+    ...prev,
+    [e.target.name]: e.target.value,
+  }));
+};
+
+const handleChangePassword = async (e) => {
+  e.preventDefault();
+
+  if (passwordForm.new_password !== passwordForm.confirm_password) {
+    toast.error("New passwords do not match.");
+    return;
+  }
+
+  setChangingPassword(true);
+
+  try {
+  await api.post("auth/change-password/", {
+  old_password: passwordForm.current_password,
+  new_password: passwordForm.new_password,
+  confirm_password: passwordForm.confirm_password,
+});
+
+    toast.success("Password changed successfully.");
+
+    setPasswordForm({
+      current_password: "",
+      new_password: "",
+      confirm_password: "",
+    });
+
+  } catch (err) {
+      console.log(err.response?.data);
+
+    toast.error(
+      
+      err.response?.data?.detail ||
+      err.response?.data?.current_password?.[0] ||
+      "Failed to change password."
+    );
+  } finally {
+    setChangingPassword(false);
+  }
+};
+
+
   const [form, setForm] = useState({
     first_name: "",
     last_name: "",
@@ -301,6 +356,78 @@ export default function PatientProfile() {
           </div>
         </form>
       </div>
+      <div
+  className="pt-card"
+  style={{
+    maxWidth: "680px",
+    margin: "24px auto 0",
+    padding: "30px",
+  }}
+>
+  <h3
+    style={{
+      color: "#0d9488",
+      marginBottom: "20px",
+    }}
+  >
+    🔐 Change Password
+  </h3>
+
+  <form onSubmit={handleChangePassword}>
+
+    <div className="pt-field">
+      <label className="pt-label">Current Password</label>
+      <input
+        type="password"
+        name="current_password"
+        value={passwordForm.current_password}
+        onChange={handlePasswordChange}
+        className="pt-input"
+      />
+    </div>
+
+    <div className="pt-field">
+      <label className="pt-label">New Password</label>
+      <input
+        type="password"
+        name="new_password"
+        value={passwordForm.new_password}
+        onChange={handlePasswordChange}
+        className="pt-input"
+      />
+    </div>
+
+    <div className="pt-field">
+      <label className="pt-label">Confirm New Password</label>
+      <input
+        type="password"
+        name="confirm_password"
+        value={passwordForm.confirm_password}
+        onChange={handlePasswordChange}
+        className="pt-input"
+      />
+    </div>
+
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "flex-end",
+        marginTop: "24px",
+      }}
+    >
+      <button
+        type="submit"
+        className="pt-btn pt-btn-primary"
+        disabled={changingPassword}
+      >
+        {changingPassword
+          ? "Changing..."
+          : "Change Password"}
+      </button>
+    </div>
+
+  </form>
+</div>
     </div>
   );
 }
