@@ -1,5 +1,5 @@
 #!/bin/sh
-'''exec' "/media/sami/New Volume1/ITI Python/framework project/Medical-Project/.venv/bin/python3" "$0" "$@"
+'''exec' "/media/sami/New Volume/ITI Python/framework project/Medical-Project/.venv/bin/python" "$0" "$@"
 ' '''
 # -*- coding: utf-8 -*-
 import re
